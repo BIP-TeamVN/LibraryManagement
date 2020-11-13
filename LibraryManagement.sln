@@ -5,8 +5,8 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F092A008-55A0-481F-9858-37AE68705646}"
 	ProjectSection(SolutionItems) = preProject
-		E:\Documents\HCMUTE\2020_2021_1st\_final_project\LibraryManagementOld\DetailPlan.xlsx = E:\Documents\HCMUTE\2020_2021_1st\_final_project\LibraryManagementOld\DetailPlan.xlsx
-		E:\Documents\HCMUTE\2020_2021_1st\_final_project\LibraryManagementOld\ReadMe.md = E:\Documents\HCMUTE\2020_2021_1st\_final_project\LibraryManagementOld\ReadMe.md
+		DetailPlan.xlsx = DetailPlan.xlsx
+		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryManagement.App", "LibraryManagement.App\LibraryManagement.App.csproj", "{590E7609-CEC9-4ACA-A7A7-DEE8CB2D3EF4}"
