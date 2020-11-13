@@ -38,12 +38,12 @@
 
 ## Project Team Member
 
-| Name                  | 
-| ----------------------|
-| **Hoang** Ho Huy      |
-| **Khanh** Lam Quoc    |
-| **Nam** Tran Quoc     |
-| **Phuc** Nguyen Tran  |
+| Name                  | Role		|
+| ----------------------|-----------|
+| **Hoang** Ho Huy      | Coding	|
+| **Khanh** Lam Quoc    | PM, Coding|
+| **Nam** Tran Quoc     | Test		|
+| **Phuc** Nguyen Tran  | BA, Test	|
 
 <br>
 <br>
