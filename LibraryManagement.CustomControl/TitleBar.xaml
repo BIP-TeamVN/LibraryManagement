@@ -49,7 +49,10 @@
                  Foreground="{Binding ElementName=ucTitleBar, Path=Foreground}"
                  Height="{Binding ElementName=containerGrid, Path=ActualHeight}"
                  Width="{Binding ElementName=btnMinimizeWindow, Path=ActualHeight}">
-            <materialDesign:PackIcon Kind="WindowMinimize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <materialDesign:PackIcon Kind="WindowMinimize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                     Width="{Binding ElementName=btnCloseWindow, Path=ActualWidth}"
+                                     Height="{Binding ElementName=btnCloseWindow, Path=ActualHeight}">
+            </materialDesign:PackIcon>
          </Button>
 
          <!-- Maximize Window -->
@@ -57,7 +60,10 @@
                  Foreground="{Binding ElementName=ucTitleBar, Path=Foreground}"
                  Height="{Binding ElementName=containerGrid, Path=ActualHeight}"
                  Width="{Binding ElementName=btnMaximizeWindow, Path=ActualHeight}">
-            <materialDesign:PackIcon Kind="WindowMaximize" x:Name="iconWindowMaximize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <materialDesign:PackIcon Kind="WindowMaximize" x:Name="iconWindowMaximize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                     Width="{Binding ElementName=btnCloseWindow, Path=ActualWidth}"
+                                     Height="{Binding ElementName=btnCloseWindow, Path=ActualHeight}">
+            </materialDesign:PackIcon>
          </Button>
 
          <!-- Close Window -->
@@ -65,7 +71,10 @@
                  Foreground="{Binding ElementName=ucTitleBar, Path=Foreground}"
                  Height="{Binding ElementName=containerGrid, Path=ActualHeight}"
                  Width="{Binding ElementName=btnCloseWindow, Path=ActualHeight}">
-            <materialDesign:PackIcon Kind="WindowClose" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <materialDesign:PackIcon Kind="WindowClose" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                     Width="{Binding ElementName=btnCloseWindow, Path=ActualWidth}"
+                                     Height="{Binding ElementName=btnCloseWindow, Path=ActualHeight}">
+            </materialDesign:PackIcon>
             <Button.Style>
                <!--Set red bacground when mouse hover-->
                <Style TargetType="{x:Type Button}">
