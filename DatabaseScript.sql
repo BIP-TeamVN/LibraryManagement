@@ -17,28 +17,28 @@ CREATE TABLE [dbo].[User](
 	[Ssn] VARCHAR(12) NULL,
 
 	[Address] NVARCHAR(100) NULL,
-	[PhoneNumber] VARCHAR(15) NOT NULL,
-	[Email] VARCHAR(50) UNIQUE NULL,
+	[PhoneNumber] VARCHAR(15) UNIQUE NOT NULL,
+	[Email] VARCHAR(50) NULL,
 
 	[Username] VARCHAR(16) UNIQUE NOT NULL,
 	[Password] VARCHAR(32) NOT NULL,
-	[UserType] VARCHAR(20) NOT NULL DEFAULT 'Member',		-- loại tài khoản admin, librarian, member
+	[UserType] VARCHAR(1) NOT NULL DEFAULT 'M',		-- loại tài khoản admin = A, librarian = L, member = M
 	[UserStatus] BIT NOT NULL DEFAULT 1,
 	[ImagePath] VARCHAR(500) NULL,
 )
 GO
-ALTER TABLE [dbo].[User] ADD CONSTRAINT [pk_users] PRIMARY KEY([UserId])
+ALTER TABLE [dbo].[User] ADD CONSTRAINT [PK_User] PRIMARY KEY([UserId])
 GO
 
--- tài khoản quản trị viên
-DROP TABLE IF EXISTS [dbo].[Admin]
-CREATE TABLE [dbo].[Admin] (
-	[UserId] BIGINT NOT NULL,
-)
-GO
-ALTER TABLE [dbo].[Admin] ADD CONSTRAINT [pk_admin] PRIMARY KEY ([UserId])
-ALTER TABLE [dbo].[Admin] ADD CONSTRAINT [fk_user_admin] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId])
-GO
+---- tài khoản quản trị viên
+--DROP TABLE IF EXISTS [dbo].[Admin]
+--CREATE TABLE [dbo].[Admin] (
+--	[UserId] BIGINT NOT NULL,
+--)
+--GO
+--ALTER TABLE [dbo].[Admin] ADD CONSTRAINT [pk_admin] PRIMARY KEY ([UserId])
+--ALTER TABLE [dbo].[Admin] ADD CONSTRAINT [fk_user_admin] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId])
+--GO
 
 -- tài khoản thủ thư
 DROP TABLE IF EXISTS [dbo].[Librarian]
@@ -47,12 +47,10 @@ CREATE TABLE [dbo].[Librarian] (
 
 	[StartDate] DATE DEFAULT GETDATE() NOT NULL,
 	[Salary] DECIMAL(19, 4) NULL,
-	[ManagerId] BIGINT NOT NULL,					-- người quản lý
 )
 GO
 ALTER TABLE [dbo].[Librarian] ADD CONSTRAINT [pk_librarian] PRIMARY KEY ([UserId])
 ALTER TABLE [dbo].[Librarian] ADD CONSTRAINT [fk_user_librarian] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId])
-ALTER TABLE [dbo].[Librarian] ADD CONSTRAINT [fk_admin_librarian] FOREIGN KEY ([ManagerId]) REFERENCES [dbo].[Admin]([UserId])
 GO
 
 -- tài khoản độc giả
@@ -103,7 +101,7 @@ CREATE TABLE [dbo].[BookCategory]
 (
 	[BookCategoryId] BIGINT IDENTITY(1, 1),		
 	[BookCategoryName] NVARCHAR(50) NULL,		-- tên chuyên mục
-	[Limitdays] int NULL,						-- số ngày cho mượn
+	[Limitdays] INT NULL,						-- số ngày cho mượn
 	[BookCategoryStatus] BIT DEFAULT 1 NULL
 )
 GO
@@ -121,8 +119,8 @@ CREATE TABLE [dbo].[BookInfo]
 	[BookCategoryId] BIGINT NULL,			-- mã chuyên mục
 	[PublisherId] BIGINT NOT NULL,			-- mã nxb
 
-	[YearPublished] int NULL,				-- năm xb
-	[PageNumber] int NULL,					-- số trang
+	[YearPublished] INT NULL,				-- năm xb
+	[PageNumber] INT NULL,					-- số trang
 	[Size] VARCHAR(11) NULL,				-- kích thước
 	[Price] DECIMAL(19, 0) NULL,			-- giá tiền
 	[BookInfoStatus] BIT DEFAULT 1 NULL,
@@ -190,3 +188,17 @@ ALTER TABLE [dbo].[Return] ADD CONSTRAINT [pk_return] PRIMARY KEY([BorrowId], [R
 ALTER TABLE [dbo].[Return] ADD CONSTRAINT [fk_return_borrow] FOREIGN KEY ([BorrowId]) REFERENCES [dbo].[Borrow]([BorrowId])
 ALTER TABLE [dbo].[Return] ADD CONSTRAINT [fk_return_librarian] FOREIGN KEY([LibrarianId]) REFERENCES [dbo].[Librarian]([UserId])
 GO
+
+------------------------------------------
+
+-- Admin user
+-- username: admin
+-- password: 12
+INSERT INTO dbo.[User] ( PhoneNumber, Username, Password, UserType, UserStatus)
+VALUES ( '00', 'admin', '7e7175c2e20d590551e9fb500bc38c8c', 'A', 1)
+
+INSERT INTO dbo.[User] (FisrtName, LastName, PhoneNumber, Username, Password, UserType, UserStatus)
+VALUES ( N'Vy',N'Huỳnh','001', 'librarian', '7e7175c2e20d590551e9fb500bc38c8c', 'L', 1)
+
+INSERT INTO dbo.[User] (FisrtName, LastName, PhoneNumber, Username, Password, UserType, UserStatus)
+VALUES ( N'Mỹ',N'Phan','002', 'member', '7e7175c2e20d590551e9fb500bc38c8c', 'M', 1)

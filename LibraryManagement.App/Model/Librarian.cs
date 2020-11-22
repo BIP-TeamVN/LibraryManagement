@@ -24,9 +24,7 @@ namespace LibraryManagement.Model
         public long UserId { get; set; }
         public System.DateTime StartDate { get; set; }
         public Nullable<decimal> Salary { get; set; }
-        public long ManagerId { get; set; }
     
-        public virtual Admin Admin { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Borrow> Borrows { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

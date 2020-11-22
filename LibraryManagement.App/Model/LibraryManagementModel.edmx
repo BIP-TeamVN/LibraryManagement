@@ -4,13 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="LibraryManagementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Admin">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="UserId" Type="bigint" Nullable="false" />
-        </EntityType>
+    <Schema Namespace="LibraryManagementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Author">
           <Key>
             <PropertyRef Name="AuthorId" />
@@ -76,7 +70,6 @@
           <Property Name="UserId" Type="bigint" Nullable="false" />
           <Property Name="StartDate" Type="date" Nullable="false" />
           <Property Name="Salary" Type="decimal" Precision="19" Scale="4" />
-          <Property Name="ManagerId" Type="bigint" Nullable="false" />
         </EntityType>
         <EntityType Name="Member">
           <Key>
@@ -122,22 +115,10 @@
           <Property Name="Email" Type="varchar" MaxLength="50" />
           <Property Name="Username" Type="varchar" MaxLength="16" Nullable="false" />
           <Property Name="Password" Type="varchar" MaxLength="32" Nullable="false" />
-          <Property Name="UserType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="UserType" Type="varchar" MaxLength="1" Nullable="false" />
           <Property Name="UserStatus" Type="bit" Nullable="false" />
           <Property Name="ImagePath" Type="varchar" MaxLength="500" />
         </EntityType>
-        <Association Name="fk_admin_librarian">
-          <End Role="Admin" Type="Self.Admin" Multiplicity="1" />
-          <End Role="Librarian" Type="Self.Librarian" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Admin">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="Librarian">
-              <PropertyRef Name="ManagerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_book_author_author">
           <End Role="Author" Type="Self.Author" Multiplicity="1" />
           <End Role="BookAuthor" Type="Self.BookAuthor" Multiplicity="*" />
@@ -246,18 +227,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_user_admin">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Admin" Type="Self.Admin" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="Admin">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_user_librarian">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="Librarian" Type="Self.Librarian" Multiplicity="0..1" />
@@ -295,7 +264,6 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="LibraryManagementModelStoreContainer">
-          <EntitySet Name="Admin" EntityType="Self.Admin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Author" EntityType="Self.Author" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BookAuthor" EntityType="Self.BookAuthor" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BookCategory" EntityType="Self.BookCategory" Schema="dbo" store:Type="Tables" />
@@ -307,10 +275,6 @@
           <EntitySet Name="Publisher" EntityType="Self.Publisher" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Return" EntityType="Self.Return" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="fk_admin_librarian" Association="Self.fk_admin_librarian">
-            <End Role="Admin" EntitySet="Admin" />
-            <End Role="Librarian" EntitySet="Librarian" />
-          </AssociationSet>
           <AssociationSet Name="fk_book_author_author" Association="Self.fk_book_author_author">
             <End Role="Author" EntitySet="Author" />
             <End Role="BookAuthor" EntitySet="BookAuthor" />
@@ -347,10 +311,6 @@
             <End Role="Librarian" EntitySet="Librarian" />
             <End Role="Return" EntitySet="Return" />
           </AssociationSet>
-          <AssociationSet Name="fk_user_admin" Association="Self.fk_user_admin">
-            <End Role="User" EntitySet="User" />
-            <End Role="Admin" EntitySet="Admin" />
-          </AssociationSet>
           <AssociationSet Name="fk_user_librarian" Association="Self.fk_user_librarian">
             <End Role="User" EntitySet="User" />
             <End Role="Librarian" EntitySet="Librarian" />
@@ -364,28 +324,75 @@
             <End Role="Borrow" EntitySet="Borrow" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="LibraryManagementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Admin">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="UserId" Type="Int64" Nullable="false" />
-          <NavigationProperty Name="Librarians" Relationship="Self.fk_admin_librarian" FromRole="Admin" ToRole="Librarian" />
-          <NavigationProperty Name="User" Relationship="Self.fk_user_admin" FromRole="Admin" ToRole="User" />
-        </EntityType>
+        <EntityContainer Name="LibraryManagementEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Authors" EntityType="LibraryManagementModel.Author" />
+          <EntitySet Name="BookCategories" EntityType="LibraryManagementModel.BookCategory" />
+          <EntitySet Name="BookInfoes" EntityType="LibraryManagementModel.BookInfo" />
+          <EntitySet Name="BookItems" EntityType="LibraryManagementModel.BookItem" />
+          <EntitySet Name="Borrows" EntityType="LibraryManagementModel.Borrow" />
+          <EntitySet Name="Librarians" EntityType="LibraryManagementModel.Librarian" />
+          <EntitySet Name="Members" EntityType="LibraryManagementModel.Member" />
+          <EntitySet Name="Publishers" EntityType="LibraryManagementModel.Publisher" />
+          <EntitySet Name="Returns" EntityType="LibraryManagementModel.Return" />
+          <EntitySet Name="Users" EntityType="LibraryManagementModel.User" />
+          <AssociationSet Name="fk_book_category" Association="LibraryManagementModel.fk_book_category">
+            <End Role="BookCategory" EntitySet="BookCategories" />
+            <End Role="BookInfo" EntitySet="BookInfoes" />
+          </AssociationSet>
+          <AssociationSet Name="fk_book_book_item" Association="LibraryManagementModel.fk_book_book_item">
+            <End Role="BookInfo" EntitySet="BookInfoes" />
+            <End Role="BookItem" EntitySet="BookItems" />
+          </AssociationSet>
+          <AssociationSet Name="fk_book_publisher" Association="LibraryManagementModel.fk_book_publisher">
+            <End Role="Publisher" EntitySet="Publishers" />
+            <End Role="BookInfo" EntitySet="BookInfoes" />
+          </AssociationSet>
+          <AssociationSet Name="pk_borrow_book_item" Association="LibraryManagementModel.pk_borrow_book_item">
+            <End Role="BookItem" EntitySet="BookItems" />
+            <End Role="Borrow" EntitySet="Borrows" />
+          </AssociationSet>
+          <AssociationSet Name="fk_borrow_librarian" Association="LibraryManagementModel.fk_borrow_librarian">
+            <End Role="Librarian" EntitySet="Librarians" />
+            <End Role="Borrow" EntitySet="Borrows" />
+          </AssociationSet>
+          <AssociationSet Name="fk_borrow_member" Association="LibraryManagementModel.fk_borrow_member">
+            <End Role="Member" EntitySet="Members" />
+            <End Role="Borrow" EntitySet="Borrows" />
+          </AssociationSet>
+          <AssociationSet Name="fk_return_borrow" Association="LibraryManagementModel.fk_return_borrow">
+            <End Role="Borrow" EntitySet="Borrows" />
+            <End Role="Return" EntitySet="Returns" />
+          </AssociationSet>
+          <AssociationSet Name="fk_return_librarian" Association="LibraryManagementModel.fk_return_librarian">
+            <End Role="Librarian" EntitySet="Librarians" />
+            <End Role="Return" EntitySet="Returns" />
+          </AssociationSet>
+          <AssociationSet Name="fk_user_librarian" Association="LibraryManagementModel.fk_user_librarian">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Librarian" EntitySet="Librarians" />
+          </AssociationSet>
+          <AssociationSet Name="fk_user_member" Association="LibraryManagementModel.fk_user_member">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Member" EntitySet="Members" />
+          </AssociationSet>
+          <AssociationSet Name="BookAuthor" Association="LibraryManagementModel.BookAuthor">
+            <End Role="Author" EntitySet="Authors" />
+            <End Role="BookInfo" EntitySet="BookInfoes" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="Author">
           <Key>
             <PropertyRef Name="AuthorId" />
           </Key>
           <Property Name="AuthorId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="NickName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NickName" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
           <Property Name="RealName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="AuthorStatus" Type="Boolean" />
-          <NavigationProperty Name="BookInfoes" Relationship="Self.BookAuthor" FromRole="Author" ToRole="BookInfo" />
+          <NavigationProperty Name="BookInfoes" Relationship="LibraryManagementModel.BookAuthor" FromRole="Author" ToRole="BookInfo" />
         </EntityType>
         <EntityType Name="BookCategory">
           <Key>
@@ -395,7 +402,7 @@
           <Property Name="BookCategoryName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Limitdays" Type="Int32" />
           <Property Name="BookCategoryStatus" Type="Boolean" />
-          <NavigationProperty Name="BookInfoes" Relationship="Self.fk_book_category" FromRole="BookCategory" ToRole="BookInfo" />
+          <NavigationProperty Name="BookInfoes" Relationship="LibraryManagementModel.fk_book_category" FromRole="BookCategory" ToRole="BookInfo" />
         </EntityType>
         <EntityType Name="BookInfo">
           <Key>
@@ -410,34 +417,34 @@
           <Property Name="Size" Type="String" MaxLength="11" FixedLength="false" Unicode="false" />
           <Property Name="Price" Type="Decimal" Precision="19" Scale="0" />
           <Property Name="BookInfoStatus" Type="Boolean" />
-          <NavigationProperty Name="BookCategory" Relationship="Self.fk_book_category" FromRole="BookInfo" ToRole="BookCategory" />
-          <NavigationProperty Name="BookItems" Relationship="Self.fk_book_book_item" FromRole="BookInfo" ToRole="BookItem" />
-          <NavigationProperty Name="Publisher" Relationship="Self.fk_book_publisher" FromRole="BookInfo" ToRole="Publisher" />
-          <NavigationProperty Name="Authors" Relationship="Self.BookAuthor" FromRole="BookInfo" ToRole="Author" />
+          <NavigationProperty Name="BookCategory" Relationship="LibraryManagementModel.fk_book_category" FromRole="BookInfo" ToRole="BookCategory" />
+          <NavigationProperty Name="BookItems" Relationship="LibraryManagementModel.fk_book_book_item" FromRole="BookInfo" ToRole="BookItem" />
+          <NavigationProperty Name="Publisher" Relationship="LibraryManagementModel.fk_book_publisher" FromRole="BookInfo" ToRole="Publisher" />
+          <NavigationProperty Name="Authors" Relationship="LibraryManagementModel.BookAuthor" FromRole="BookInfo" ToRole="Author" />
         </EntityType>
         <EntityType Name="BookItem">
           <Key>
             <PropertyRef Name="BookItemId" />
           </Key>
-          <Property Name="BookItemId" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="BookItemId" Type="String" Nullable="false" MaxLength="12" FixedLength="false" Unicode="false" />
           <Property Name="BookInfoId" Type="Int64" Nullable="false" />
-          <NavigationProperty Name="BookInfo" Relationship="Self.fk_book_book_item" FromRole="BookItem" ToRole="BookInfo" />
-          <NavigationProperty Name="Borrows" Relationship="Self.pk_borrow_book_item" FromRole="BookItem" ToRole="Borrow" />
+          <NavigationProperty Name="BookInfo" Relationship="LibraryManagementModel.fk_book_book_item" FromRole="BookItem" ToRole="BookInfo" />
+          <NavigationProperty Name="Borrows" Relationship="LibraryManagementModel.pk_borrow_book_item" FromRole="BookItem" ToRole="Borrow" />
         </EntityType>
         <EntityType Name="Borrow">
           <Key>
             <PropertyRef Name="BorrowId" />
           </Key>
           <Property Name="BorrowId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="BookItemId" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="BookItemId" Type="String" Nullable="false" MaxLength="12" FixedLength="false" Unicode="false" />
           <Property Name="MemberId" Type="Int64" Nullable="false" />
           <Property Name="LibrarianId" Type="Int64" Nullable="false" />
           <Property Name="BorrowDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Status" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="BookItem" Relationship="Self.pk_borrow_book_item" FromRole="Borrow" ToRole="BookItem" />
-          <NavigationProperty Name="Librarian" Relationship="Self.fk_borrow_librarian" FromRole="Borrow" ToRole="Librarian" />
-          <NavigationProperty Name="Member" Relationship="Self.fk_borrow_member" FromRole="Borrow" ToRole="Member" />
-          <NavigationProperty Name="Returns" Relationship="Self.fk_return_borrow" FromRole="Borrow" ToRole="Return" />
+          <NavigationProperty Name="BookItem" Relationship="LibraryManagementModel.pk_borrow_book_item" FromRole="Borrow" ToRole="BookItem" />
+          <NavigationProperty Name="Librarian" Relationship="LibraryManagementModel.fk_borrow_librarian" FromRole="Borrow" ToRole="Librarian" />
+          <NavigationProperty Name="Member" Relationship="LibraryManagementModel.fk_borrow_member" FromRole="Borrow" ToRole="Member" />
+          <NavigationProperty Name="Returns" Relationship="LibraryManagementModel.fk_return_borrow" FromRole="Borrow" ToRole="Return" />
         </EntityType>
         <EntityType Name="Librarian">
           <Key>
@@ -446,11 +453,9 @@
           <Property Name="UserId" Type="Int64" Nullable="false" />
           <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Salary" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="ManagerId" Type="Int64" Nullable="false" />
-          <NavigationProperty Name="Admin" Relationship="Self.fk_admin_librarian" FromRole="Librarian" ToRole="Admin" />
-          <NavigationProperty Name="Borrows" Relationship="Self.fk_borrow_librarian" FromRole="Librarian" ToRole="Borrow" />
-          <NavigationProperty Name="Returns" Relationship="Self.fk_return_librarian" FromRole="Librarian" ToRole="Return" />
-          <NavigationProperty Name="User" Relationship="Self.fk_user_librarian" FromRole="Librarian" ToRole="User" />
+          <NavigationProperty Name="Borrows" Relationship="LibraryManagementModel.fk_borrow_librarian" FromRole="Librarian" ToRole="Borrow" />
+          <NavigationProperty Name="Returns" Relationship="LibraryManagementModel.fk_return_librarian" FromRole="Librarian" ToRole="Return" />
+          <NavigationProperty Name="User" Relationship="LibraryManagementModel.fk_user_librarian" FromRole="Librarian" ToRole="User" />
         </EntityType>
         <EntityType Name="Member">
           <Key>
@@ -459,21 +464,21 @@
           <Property Name="UserId" Type="Int64" Nullable="false" />
           <Property Name="RegisterDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="ExpDate" Type="DateTime" Nullable="false" Precision="0" />
-          <NavigationProperty Name="Borrows" Relationship="Self.fk_borrow_member" FromRole="Member" ToRole="Borrow" />
-          <NavigationProperty Name="User" Relationship="Self.fk_user_member" FromRole="Member" ToRole="User" />
+          <NavigationProperty Name="Borrows" Relationship="LibraryManagementModel.fk_borrow_member" FromRole="Member" ToRole="Borrow" />
+          <NavigationProperty Name="User" Relationship="LibraryManagementModel.fk_user_member" FromRole="Member" ToRole="User" />
         </EntityType>
         <EntityType Name="Publisher">
           <Key>
             <PropertyRef Name="PublisherId" />
           </Key>
           <Property Name="PublisherId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PublisherName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PublisherName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="PhoneNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="Address" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Email" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="Website" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
           <Property Name="PublisherStatus" Type="Boolean" />
-          <NavigationProperty Name="BookInfoes" Relationship="Self.fk_book_publisher" FromRole="Publisher" ToRole="BookInfo" />
+          <NavigationProperty Name="BookInfoes" Relationship="LibraryManagementModel.fk_book_publisher" FromRole="Publisher" ToRole="BookInfo" />
         </EntityType>
         <EntityType Name="Return">
           <Key>
@@ -483,8 +488,8 @@
           <Property Name="BorrowId" Type="Int64" Nullable="false" />
           <Property Name="ReturnDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="LibrarianId" Type="Int64" Nullable="false" />
-          <NavigationProperty Name="Borrow" Relationship="Self.fk_return_borrow" FromRole="Return" ToRole="Borrow" />
-          <NavigationProperty Name="Librarian" Relationship="Self.fk_return_librarian" FromRole="Return" ToRole="Librarian" />
+          <NavigationProperty Name="Borrow" Relationship="LibraryManagementModel.fk_return_borrow" FromRole="Return" ToRole="Borrow" />
+          <NavigationProperty Name="Librarian" Relationship="LibraryManagementModel.fk_return_librarian" FromRole="Return" ToRole="Librarian" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -497,44 +502,19 @@
           <Property Name="DateOfBirdth" Type="DateTime" Precision="0" />
           <Property Name="Ssn" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
           <Property Name="Address" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PhoneNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PhoneNumber" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Username" Type="String" MaxLength="16" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Password" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="UserType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="UserType" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Name="UserStatus" Type="Boolean" Nullable="false" />
           <Property Name="ImagePath" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Admin" Relationship="Self.fk_user_admin" FromRole="User" ToRole="Admin" />
-          <NavigationProperty Name="Librarian" Relationship="Self.fk_user_librarian" FromRole="User" ToRole="Librarian" />
-          <NavigationProperty Name="Member" Relationship="Self.fk_user_member" FromRole="User" ToRole="Member" />
+          <NavigationProperty Name="Librarian" Relationship="LibraryManagementModel.fk_user_librarian" FromRole="User" ToRole="Librarian" />
+          <NavigationProperty Name="Member" Relationship="LibraryManagementModel.fk_user_member" FromRole="User" ToRole="Member" />
         </EntityType>
-        <Association Name="fk_admin_librarian">
-          <End Role="Admin" Type="Self.Admin" Multiplicity="1" />
-          <End Role="Librarian" Type="Self.Librarian" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Admin">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="Librarian">
-              <PropertyRef Name="ManagerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_user_admin">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Admin" Type="Self.Admin" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="Admin">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_book_category">
-          <End Role="BookCategory" Type="Self.BookCategory" Multiplicity="0..1" />
-          <End Role="BookInfo" Type="Self.BookInfo" Multiplicity="*" />
+          <End Type="LibraryManagementModel.BookCategory" Role="BookCategory" Multiplicity="0..1" />
+          <End Type="LibraryManagementModel.BookInfo" Role="BookInfo" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BookCategory">
               <PropertyRef Name="BookCategoryId" />
@@ -545,8 +525,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_book_book_item">
-          <End Role="BookInfo" Type="Self.BookInfo" Multiplicity="1" />
-          <End Role="BookItem" Type="Self.BookItem" Multiplicity="*" />
+          <End Type="LibraryManagementModel.BookInfo" Role="BookInfo" Multiplicity="1" />
+          <End Type="LibraryManagementModel.BookItem" Role="BookItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BookInfo">
               <PropertyRef Name="BookInfoId" />
@@ -557,8 +537,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_book_publisher">
-          <End Role="Publisher" Type="Self.Publisher" Multiplicity="1" />
-          <End Role="BookInfo" Type="Self.BookInfo" Multiplicity="*" />
+          <End Type="LibraryManagementModel.Publisher" Role="Publisher" Multiplicity="1" />
+          <End Type="LibraryManagementModel.BookInfo" Role="BookInfo" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Publisher">
               <PropertyRef Name="PublisherId" />
@@ -569,8 +549,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="pk_borrow_book_item">
-          <End Role="BookItem" Type="Self.BookItem" Multiplicity="1" />
-          <End Role="Borrow" Type="Self.Borrow" Multiplicity="*" />
+          <End Type="LibraryManagementModel.BookItem" Role="BookItem" Multiplicity="1" />
+          <End Type="LibraryManagementModel.Borrow" Role="Borrow" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BookItem">
               <PropertyRef Name="BookItemId" />
@@ -581,8 +561,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_borrow_librarian">
-          <End Role="Librarian" Type="Self.Librarian" Multiplicity="1" />
-          <End Role="Borrow" Type="Self.Borrow" Multiplicity="*" />
+          <End Type="LibraryManagementModel.Librarian" Role="Librarian" Multiplicity="1" />
+          <End Type="LibraryManagementModel.Borrow" Role="Borrow" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Librarian">
               <PropertyRef Name="UserId" />
@@ -593,8 +573,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_borrow_member">
-          <End Role="Member" Type="Self.Member" Multiplicity="1" />
-          <End Role="Borrow" Type="Self.Borrow" Multiplicity="*" />
+          <End Type="LibraryManagementModel.Member" Role="Member" Multiplicity="1" />
+          <End Type="LibraryManagementModel.Borrow" Role="Borrow" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Member">
               <PropertyRef Name="UserId" />
@@ -605,8 +585,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_return_borrow">
-          <End Role="Borrow" Type="Self.Borrow" Multiplicity="1" />
-          <End Role="Return" Type="Self.Return" Multiplicity="*" />
+          <End Type="LibraryManagementModel.Borrow" Role="Borrow" Multiplicity="1" />
+          <End Type="LibraryManagementModel.Return" Role="Return" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Borrow">
               <PropertyRef Name="BorrowId" />
@@ -617,8 +597,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_return_librarian">
-          <End Role="Librarian" Type="Self.Librarian" Multiplicity="1" />
-          <End Role="Return" Type="Self.Return" Multiplicity="*" />
+          <End Type="LibraryManagementModel.Librarian" Role="Librarian" Multiplicity="1" />
+          <End Type="LibraryManagementModel.Return" Role="Return" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Librarian">
               <PropertyRef Name="UserId" />
@@ -629,8 +609,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_user_librarian">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Librarian" Type="Self.Librarian" Multiplicity="0..1" />
+          <End Type="LibraryManagementModel.User" Role="User" Multiplicity="1" />
+          <End Type="LibraryManagementModel.Librarian" Role="Librarian" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="User">
               <PropertyRef Name="UserId" />
@@ -641,8 +621,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_user_member">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Member" Type="Self.Member" Multiplicity="0..1" />
+          <End Type="LibraryManagementModel.User" Role="User" Multiplicity="1" />
+          <End Type="LibraryManagementModel.Member" Role="Member" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="User">
               <PropertyRef Name="UserId" />
@@ -653,209 +633,136 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="BookAuthor">
-          <End Role="Author" Type="Self.Author" Multiplicity="*" />
-          <End Role="BookInfo" Type="Self.BookInfo" Multiplicity="*" />
+          <End Type="LibraryManagementModel.Author" Role="Author" Multiplicity="*" />
+          <End Type="LibraryManagementModel.BookInfo" Role="BookInfo" Multiplicity="*" />
         </Association>
-        <EntityContainer Name="LibraryManagementEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Admins" EntityType="Self.Admin" />
-          <EntitySet Name="Authors" EntityType="Self.Author" />
-          <EntitySet Name="BookCategories" EntityType="Self.BookCategory" />
-          <EntitySet Name="BookInfoes" EntityType="Self.BookInfo" />
-          <EntitySet Name="BookItems" EntityType="Self.BookItem" />
-          <EntitySet Name="Borrows" EntityType="Self.Borrow" />
-          <EntitySet Name="Librarians" EntityType="Self.Librarian" />
-          <EntitySet Name="Members" EntityType="Self.Member" />
-          <EntitySet Name="Publishers" EntityType="Self.Publisher" />
-          <EntitySet Name="Returns" EntityType="Self.Return" />
-          <EntitySet Name="Users" EntityType="Self.User" />
-          <AssociationSet Name="fk_admin_librarian" Association="Self.fk_admin_librarian">
-            <End Role="Admin" EntitySet="Admins" />
-            <End Role="Librarian" EntitySet="Librarians" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user_admin" Association="Self.fk_user_admin">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Admin" EntitySet="Admins" />
-          </AssociationSet>
-          <AssociationSet Name="fk_book_category" Association="Self.fk_book_category">
-            <End Role="BookCategory" EntitySet="BookCategories" />
-            <End Role="BookInfo" EntitySet="BookInfoes" />
-          </AssociationSet>
-          <AssociationSet Name="fk_book_book_item" Association="Self.fk_book_book_item">
-            <End Role="BookInfo" EntitySet="BookInfoes" />
-            <End Role="BookItem" EntitySet="BookItems" />
-          </AssociationSet>
-          <AssociationSet Name="fk_book_publisher" Association="Self.fk_book_publisher">
-            <End Role="Publisher" EntitySet="Publishers" />
-            <End Role="BookInfo" EntitySet="BookInfoes" />
-          </AssociationSet>
-          <AssociationSet Name="pk_borrow_book_item" Association="Self.pk_borrow_book_item">
-            <End Role="BookItem" EntitySet="BookItems" />
-            <End Role="Borrow" EntitySet="Borrows" />
-          </AssociationSet>
-          <AssociationSet Name="fk_borrow_librarian" Association="Self.fk_borrow_librarian">
-            <End Role="Librarian" EntitySet="Librarians" />
-            <End Role="Borrow" EntitySet="Borrows" />
-          </AssociationSet>
-          <AssociationSet Name="fk_borrow_member" Association="Self.fk_borrow_member">
-            <End Role="Member" EntitySet="Members" />
-            <End Role="Borrow" EntitySet="Borrows" />
-          </AssociationSet>
-          <AssociationSet Name="fk_return_borrow" Association="Self.fk_return_borrow">
-            <End Role="Borrow" EntitySet="Borrows" />
-            <End Role="Return" EntitySet="Returns" />
-          </AssociationSet>
-          <AssociationSet Name="fk_return_librarian" Association="Self.fk_return_librarian">
-            <End Role="Librarian" EntitySet="Librarians" />
-            <End Role="Return" EntitySet="Returns" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user_librarian" Association="Self.fk_user_librarian">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Librarian" EntitySet="Librarians" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user_member" Association="Self.fk_user_member">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Member" EntitySet="Members" />
-          </AssociationSet>
-          <AssociationSet Name="BookAuthor" Association="Self.BookAuthor">
-            <End Role="Author" EntitySet="Authors" />
-            <End Role="BookInfo" EntitySet="BookInfoes" />
-          </AssociationSet>
-        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="LibraryManagementModelStoreContainer" CdmEntityContainer="LibraryManagementEntities">
-          <EntitySetMapping Name="Admins">
-            <EntityTypeMapping TypeName="LibraryManagementModel.Admin">
-              <MappingFragment StoreEntitySet="Admin">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Authors">
             <EntityTypeMapping TypeName="LibraryManagementModel.Author">
               <MappingFragment StoreEntitySet="Author">
-                <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
-                <ScalarProperty Name="NickName" ColumnName="NickName" />
-                <ScalarProperty Name="RealName" ColumnName="RealName" />
                 <ScalarProperty Name="AuthorStatus" ColumnName="AuthorStatus" />
+                <ScalarProperty Name="RealName" ColumnName="RealName" />
+                <ScalarProperty Name="NickName" ColumnName="NickName" />
+                <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BookCategories">
             <EntityTypeMapping TypeName="LibraryManagementModel.BookCategory">
               <MappingFragment StoreEntitySet="BookCategory">
-                <ScalarProperty Name="BookCategoryId" ColumnName="BookCategoryId" />
-                <ScalarProperty Name="BookCategoryName" ColumnName="BookCategoryName" />
-                <ScalarProperty Name="Limitdays" ColumnName="Limitdays" />
                 <ScalarProperty Name="BookCategoryStatus" ColumnName="BookCategoryStatus" />
+                <ScalarProperty Name="Limitdays" ColumnName="Limitdays" />
+                <ScalarProperty Name="BookCategoryName" ColumnName="BookCategoryName" />
+                <ScalarProperty Name="BookCategoryId" ColumnName="BookCategoryId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BookInfoes">
             <EntityTypeMapping TypeName="LibraryManagementModel.BookInfo">
               <MappingFragment StoreEntitySet="BookInfo">
-                <ScalarProperty Name="BookInfoId" ColumnName="BookInfoId" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="BookCategoryId" ColumnName="BookCategoryId" />
-                <ScalarProperty Name="PublisherId" ColumnName="PublisherId" />
-                <ScalarProperty Name="YearPublished" ColumnName="YearPublished" />
-                <ScalarProperty Name="PageNumber" ColumnName="PageNumber" />
-                <ScalarProperty Name="Size" ColumnName="Size" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
                 <ScalarProperty Name="BookInfoStatus" ColumnName="BookInfoStatus" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="PageNumber" ColumnName="PageNumber" />
+                <ScalarProperty Name="YearPublished" ColumnName="YearPublished" />
+                <ScalarProperty Name="PublisherId" ColumnName="PublisherId" />
+                <ScalarProperty Name="BookCategoryId" ColumnName="BookCategoryId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="BookInfoId" ColumnName="BookInfoId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BookItems">
             <EntityTypeMapping TypeName="LibraryManagementModel.BookItem">
               <MappingFragment StoreEntitySet="BookItem">
-                <ScalarProperty Name="BookItemId" ColumnName="BookItemId" />
                 <ScalarProperty Name="BookInfoId" ColumnName="BookInfoId" />
+                <ScalarProperty Name="BookItemId" ColumnName="BookItemId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Borrows">
             <EntityTypeMapping TypeName="LibraryManagementModel.Borrow">
               <MappingFragment StoreEntitySet="Borrow">
-                <ScalarProperty Name="BorrowId" ColumnName="BorrowId" />
-                <ScalarProperty Name="BookItemId" ColumnName="BookItemId" />
-                <ScalarProperty Name="MemberId" ColumnName="MemberId" />
-                <ScalarProperty Name="LibrarianId" ColumnName="LibrarianId" />
-                <ScalarProperty Name="BorrowDate" ColumnName="BorrowDate" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="BorrowDate" ColumnName="BorrowDate" />
+                <ScalarProperty Name="LibrarianId" ColumnName="LibrarianId" />
+                <ScalarProperty Name="MemberId" ColumnName="MemberId" />
+                <ScalarProperty Name="BookItemId" ColumnName="BookItemId" />
+                <ScalarProperty Name="BorrowId" ColumnName="BorrowId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Librarians">
             <EntityTypeMapping TypeName="LibraryManagementModel.Librarian">
               <MappingFragment StoreEntitySet="Librarian">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="Salary" ColumnName="Salary" />
-                <ScalarProperty Name="ManagerId" ColumnName="ManagerId" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Members">
             <EntityTypeMapping TypeName="LibraryManagementModel.Member">
               <MappingFragment StoreEntitySet="Member">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="RegisterDate" ColumnName="RegisterDate" />
                 <ScalarProperty Name="ExpDate" ColumnName="ExpDate" />
+                <ScalarProperty Name="RegisterDate" ColumnName="RegisterDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Publishers">
             <EntityTypeMapping TypeName="LibraryManagementModel.Publisher">
               <MappingFragment StoreEntitySet="Publisher">
-                <ScalarProperty Name="PublisherId" ColumnName="PublisherId" />
-                <ScalarProperty Name="PublisherName" ColumnName="PublisherName" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Website" ColumnName="Website" />
                 <ScalarProperty Name="PublisherStatus" ColumnName="PublisherStatus" />
+                <ScalarProperty Name="Website" ColumnName="Website" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="PublisherName" ColumnName="PublisherName" />
+                <ScalarProperty Name="PublisherId" ColumnName="PublisherId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Returns">
             <EntityTypeMapping TypeName="LibraryManagementModel.Return">
               <MappingFragment StoreEntitySet="Return">
-                <ScalarProperty Name="BorrowId" ColumnName="BorrowId" />
-                <ScalarProperty Name="ReturnDate" ColumnName="ReturnDate" />
                 <ScalarProperty Name="LibrarianId" ColumnName="LibrarianId" />
+                <ScalarProperty Name="ReturnDate" ColumnName="ReturnDate" />
+                <ScalarProperty Name="BorrowId" ColumnName="BorrowId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="LibraryManagementModel.User">
               <MappingFragment StoreEntitySet="User">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="FisrtName" ColumnName="FisrtName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="Gender" ColumnName="Gender" />
-                <ScalarProperty Name="DateOfBirdth" ColumnName="DateOfBirdth" />
-                <ScalarProperty Name="Ssn" ColumnName="Ssn" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="UserType" ColumnName="UserType" />
-                <ScalarProperty Name="UserStatus" ColumnName="UserStatus" />
                 <ScalarProperty Name="ImagePath" ColumnName="ImagePath" />
+                <ScalarProperty Name="UserStatus" ColumnName="UserStatus" />
+                <ScalarProperty Name="UserType" ColumnName="UserType" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Ssn" ColumnName="Ssn" />
+                <ScalarProperty Name="DateOfBirdth" ColumnName="DateOfBirdth" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FisrtName" ColumnName="FisrtName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <AssociationSetMapping Name="BookAuthor" TypeName="LibraryManagementModel.BookAuthor" StoreEntitySet="BookAuthor">
-            <EndProperty Name="Author">
-              <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
-            </EndProperty>
             <EndProperty Name="BookInfo">
               <ScalarProperty Name="BookInfoId" ColumnName="BookInfoId" />
+            </EndProperty>
+            <EndProperty Name="Author">
+              <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
             </EndProperty>
           </AssociationSetMapping>
         </EntityContainerMapping>
