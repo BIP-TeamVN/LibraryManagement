@@ -8,6 +8,7 @@
       public LoginWindow()
       {
          InitializeComponent();
+         txtLoginUid.Focus();
       }
    }
 }
