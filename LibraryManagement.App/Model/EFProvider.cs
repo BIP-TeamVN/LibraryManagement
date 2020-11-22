@@ -4,13 +4,13 @@ using System.Windows;
 
 namespace LibraryManagement.Model
 {
-   public class EntityProvider
+   public class EFProvider
    {
-      public static EntityProvider Instance
+      public static EFProvider Instance
       {
          get
          {
-            instance = instance ?? new EntityProvider();
+            instance = instance ?? new EFProvider();
             return instance;
          }
          set => instance = value;
@@ -51,11 +51,11 @@ namespace LibraryManagement.Model
          if (reloadDatabase) { Reload(); }
       }
 
-      private EntityProvider()
+      private EFProvider()
       {
          DbEntities = new LibraryManagementEntities();
       }
 
-      private static EntityProvider instance;
+      private static EFProvider instance;
    }
 }
