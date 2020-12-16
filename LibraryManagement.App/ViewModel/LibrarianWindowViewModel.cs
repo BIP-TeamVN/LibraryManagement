@@ -32,8 +32,8 @@ namespace LibraryManagement.ViewModel
 
             GridCursor = p.FindName("gridCursor") as Grid;
             GridMain = p.FindName("gridMain") as Grid;
-            // set default page
-            GridCursor.Margin = new Thickness(0, 60 * 2, 0, 0);
+               // set default page
+               GridCursor.Margin = new Thickness(0, 60 * 2, 0, 0);
             GridMain.Children.Add(this.PageManagerBook);
          });
 
@@ -75,6 +75,17 @@ namespace LibraryManagement.ViewModel
                   break;
 
                case "mnuLogout":
+                  var messageResult = CustomControl.CustomMessageBox.Show("Bạn có thực sự muốn đăng xuất ?", "Cảnh báo", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                  if (messageResult == MessageBoxResult.Yes)
+                  {
+                     System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+                     Application.Current.Shutdown();
+                  }
+                  else
+                  {
+                     lvNavigationMenu.SelectedIndex = 0;
+                     NavSelectionChangedCommand.Execute(p);
+                  }
                   break;
             }
          });

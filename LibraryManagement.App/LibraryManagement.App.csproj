@@ -83,6 +83,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppUtils\Definition.cs" />
+    <Compile Include="AppUtils\Logger.cs" />
+    <Compile Include="Enum\EStatusFillter.cs" />
+    <Compile Include="Interface\IDataGet.cs" />
+    <Compile Include="Interface\IDataUpdate.cs" />
+    <Compile Include="Interface\IUserLogin.cs" />
     <Compile Include="Model\Author.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
@@ -98,8 +103,9 @@
     <Compile Include="Model\Borrow.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\DataAccessLayer\UserDAL.cs" />
     <Compile Include="AppUtils\EFProvider.cs" />
+    <Compile Include="Model\DataAccessLayer\UserDAL.cs" />
+    <Compile Include="Model\ExtensionEntityModel\User.cs" />
     <Compile Include="Model\Librarian.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
@@ -131,7 +137,7 @@
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\AdminWindowViewModel.cs" />
-    <Compile Include="ViewModel\BaseViewModel.cs" />
+    <Compile Include="ViewModel\BaseObject\BaseViewModel.cs" />
     <Compile Include="ViewModel\LibrarianWindowViewModel.cs" />
     <Compile Include="ViewModel\LoginWindowViewModel.cs" />
     <Compile Include="ViewModel\MemberWindowViewModel.cs" />
