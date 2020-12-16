@@ -82,9 +82,54 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Cons.cs" />
+    <Compile Include="AppUtils\Definition.cs" />
+    <Compile Include="Model\Author.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\BookCategory.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\BookInfo.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\BookItem.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Borrow.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\DataAccessLayer\UserDAL.cs" />
-    <Compile Include="Model\EFProvider.cs" />
+    <Compile Include="AppUtils\EFProvider.cs" />
+    <Compile Include="Model\Librarian.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LibraryManagementModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LibraryManagementModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LibraryManagementModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LibraryManagementModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LibraryManagementModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Member.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Publisher.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Return.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\User.cs">
+      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\AdminWindowViewModel.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\LibrarianWindowViewModel.cs" />
@@ -212,51 +257,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\Author.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\BookCategory.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\BookInfo.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\BookItem.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Borrow.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Librarian.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\LibraryManagementModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LibraryManagementModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\LibraryManagementModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\LibraryManagementModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LibraryManagementModel.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Member.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Publisher.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Return.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\User.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -322,6 +322,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\library-ico.ico" />
+    <Resource Include="Resources\Images\login-window-background.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
     <Content Include="Model\LibraryManagementModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>LibraryManagementModel.edmx</DependentUpon>
@@ -332,14 +340,6 @@
       <DependentUpon>LibraryManagementModel.edmx</DependentUpon>
       <LastGenOutput>LibraryManagementModel.cs</LastGenOutput>
     </Content>
-    <Resource Include="Resources\Images\Icons\library-ico.ico" />
-    <Resource Include="Resources\Images\login-window-background.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\DataTransferObject\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets')" />

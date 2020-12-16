@@ -23,7 +23,7 @@ namespace LibraryManagement.ViewModel
       {
          LoadedWindow = new RelayCommand<Window>((p) => { return (p != null); }, (p) =>
          {
-            this.WindowTitle = ("Library Management - Member: " + userLogin.LastName + " " + userLogin.FisrtName).Trim();
+            this.WindowTitle = ("Library Management - Member: " + userLogin.LastName + " " + userLogin.FirstName).Trim();
             InitPage();
 
             GridCursor = p.FindName("gridCursor") as Grid;

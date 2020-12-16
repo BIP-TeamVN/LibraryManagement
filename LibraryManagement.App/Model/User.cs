@@ -15,10 +15,10 @@ namespace LibraryManagement.Model
     public partial class User
     {
         public long UserId { get; set; }
-        public string FisrtName { get; set; }
+        public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Gender { get; set; }
-        public Nullable<System.DateTime> DateOfBirdth { get; set; }
+        public System.DateTime DateOfBirth { get; set; }
         public string Ssn { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
@@ -27,7 +27,7 @@ namespace LibraryManagement.Model
         public string Password { get; set; }
         public string UserType { get; set; }
         public bool UserStatus { get; set; }
-        public string ImagePath { get; set; }
+        public string Image { get; set; }
     
         public virtual Librarian Librarian { get; set; }
         public virtual Member Member { get; set; }

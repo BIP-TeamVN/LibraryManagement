@@ -104,7 +104,7 @@ namespace LibraryManagement.ViewModel
 
                switch (userLogin.UserType)
                {
-                  case string w when w == Cons.User.UserTypeAdmin:
+                  case string w when w == Definition.User.Type.Admin:
                      AdminWindow adminWindow = new AdminWindow()
                      {
                         DataContext = new AdminWindowViewModel(userLogin),
@@ -112,7 +112,7 @@ namespace LibraryManagement.ViewModel
                      adminWindow.Show();
                      break;
 
-                  case string w when w == Cons.User.UserTypeLibrarian:
+                  case string w when w == Definition.User.Type.Librarian:
                      LibrarianWindow librarianWindow = new LibrarianWindow()
                      {
                         DataContext = new LibrarianWindowViewModel(userLogin),
@@ -120,7 +120,7 @@ namespace LibraryManagement.ViewModel
                      librarianWindow.Show();
                      break;
 
-                  case string w when w == Cons.User.UserTypeMember:
+                  case string w when w == Definition.User.Type.Member:
                      MemberWindow memberWindow = new MemberWindow()
                      {
                         DataContext = new MemberWindowViewModel(userLogin),
