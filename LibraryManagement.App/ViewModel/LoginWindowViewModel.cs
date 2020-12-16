@@ -1,5 +1,4 @@
-﻿using LibraryManagement.CustomControl;
-using LibraryManagement.Model;
+﻿using LibraryManagement.Model;
 using LibraryManagement.View;
 using MaterialDesignThemes.Wpf;
 using System.Windows;
@@ -18,7 +17,6 @@ namespace LibraryManagement.ViewModel
       public ICommand ShowPasswordCommand { get; set; }
 
       #region Binding Property
-
       public string LoginUsername
       {
          get => loginUsername;
@@ -68,8 +66,7 @@ namespace LibraryManagement.ViewModel
             OnPropertyChanged(nameof(LoginFailedVisibility));
          }
       }
-
-      #endregion Binding Property
+      #endregion
 
       public LoginWindowViewModel()
       {
@@ -91,23 +88,20 @@ namespace LibraryManagement.ViewModel
             }
          });
 
-         LoginCommand = new RelayCommand<Window>((p) => { return p != null; }, (p) =>
+         LoginCommand = new RelayCommand<object>((p) => { return true; }, (p) =>
          {
-            User userLogin = null;
+            User userLogin = UserDAL.Login(LoginUsername, LoginPassword);
 
-            WaitingDialog.Show(() =>
-            {
-               userLogin = UserDAL.Instance.Login(LoginUsername, LoginPassword);
-            });
-
-            if (userLogin == null)  // login failed
+            if (userLogin == null)
             {
                LoginFailedVisibility = Visibility.Visible;
+
+               // return
             }
-            else                    // login susseced
+            else
             {
                LoginFailedVisibility = Visibility.Collapsed;
-               p.Hide();
+
                switch (userLogin.UserType)
                {
                   case string w when w == Definition.User.Type.Admin:
@@ -134,7 +128,6 @@ namespace LibraryManagement.ViewModel
                      memberWindow.Show();
                      break;
                }
-               p.Close();
             }
          });
 

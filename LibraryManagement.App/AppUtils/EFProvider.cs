@@ -1,9 +1,8 @@
-﻿using LibraryManagement.Model;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Windows;
 
-namespace LibraryManagement
+namespace LibraryManagement.Model
 {
    public class EFProvider
    {
@@ -33,25 +32,23 @@ namespace LibraryManagement
          {
             DbEntities.Entry(entity).State = entityState;
             Instance.DbEntities.SaveChanges();
-
-            Instance.DbEntities.Entry(entity).State = EntityState.Detached;
-            if (reloadDatabase) { Reload(); }
          }
          catch (DbEntityValidationException e)
          {
-            string exceptMessage = "";
             foreach (var entityValidationError in e.EntityValidationErrors)
             {
-               exceptMessage += $"Entity of type \"{entityValidationError.Entry.Entity.GetType().Name}\" in state \"{entityValidationError.Entry.State}\" has the following validation errors:\r\n";
+               MessageBox.Show("Entity of type \"" + entityValidationError.Entry.Entity.GetType().Name + "\" in state \"" + entityValidationError.Entry.State + "\" has the following validation errors:");
                foreach (var validationError in entityValidationError.ValidationErrors)
                {
-                  exceptMessage += $"\t- Property: \"{validationError.PropertyName}\", Error: \"{validationError.ErrorMessage}\"";
+                  MessageBox.Show("- Property: \"" + validationError.PropertyName + "\", Error: \"" + validationError.ErrorMessage + "\"");
                }
             }
-
-            Reload();
-            throw new System.Exception(exceptMessage);
+            throw;
          }
+
+         Instance.DbEntities.Entry(entity).State = EntityState.Detached;
+
+         if (reloadDatabase) { Reload(); }
       }
 
       private EFProvider()
