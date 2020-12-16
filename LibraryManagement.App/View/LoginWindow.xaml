@@ -3,15 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LibraryManagement.View"
-        mc:Ignorable="d"
+        xmlns:local="clr-namespace:LibraryManagement.View" mc:Ignorable="d"
         
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:cc="clr-namespace:LibraryManagement.CustomControl;assembly=LibraryManagement.CustomControl" 
- 
-        Title="Đăng nhập - Library Management" x:Name="loginWindow"
+        
+        FontFamily="{StaticResource Roboto}" Icon="{StaticResource LibraryIcon}"
+        Title="Đăng nhập - Library Management" x:Name="loginWindow" DataContext="{StaticResource LoginWindowVM}"
         Style="{StaticResource ResizeWindowNoBoder}" WindowStartupLocation="CenterScreen"
         Height="500" Width="900" MinHeight="500" MinWidth="454" >
    <Border Style="{StaticResource WindowBoder}">
@@ -20,7 +20,7 @@
             Background is edited from Designed by macrovector / Freepik 
             https://www.freepik.com/free-vector/online-library-isometric-background-with-human-characters-electronic-gadgets-pile-books-with-editable-text_7380029.htm
          -->
-         <Image Stretch="Fill" StretchDirection="Both" Source="/Resources/Images/LoginWindowBackground.jpg" />
+         <Image Stretch="Fill" StretchDirection="Both" Source="/Resources/Images/login-window-background.jpg" />
 
          <!--Title bar-->
          <cc:TitleBar Height="30" MaximinButtonVisibility="Collapsed" Background="Transparent" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Top"/>
@@ -51,7 +51,7 @@
                            <!--User name input field-->
                            <DockPanel LastChildFill="True" Margin="0 0 0 20">
                               <materialDesign:PackIcon Grid.Column="0" Kind="Person"/>
-                              <TextBox Grid.Column="1" Margin="20 0 0 0" Foreground="#001e51" FontSize="20"
+                              <TextBox Grid.Column="1" Margin="20 0 0 0" Foreground="#001e51" FontSize="20" x:Name="txtLoginUid"
                                        materialDesign:HintAssist.Foreground="#007acc" 
                                        materialDesign:TextFieldAssist.UnderlineBrush="#007acc"
                                        Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
@@ -89,7 +89,7 @@
                               </PasswordBox>
 
                               <!-- Text box mật khẩu, hiện khi show pass -->
-                              <TextBox Grid.Column="1" MaxLength="32" Margin="20 -6 0 0" Foreground="#001e51" FontSize="20"
+                              <TextBox Grid.Column="1" MaxLength="32" Margin="20 -6.5 0 0" Foreground="#001e51" FontSize="20"
                                        materialDesign:HintAssist.Foreground="#007acc" materialDesign:TextFieldAssist.UnderlineBrush="#007acc"
                                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                        Text="{Binding Path=LoginPassword, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"

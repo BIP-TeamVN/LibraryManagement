@@ -26,7 +26,7 @@ namespace LibraryManagement.Model
         public string Address { get; set; }
         public string Email { get; set; }
         public string Website { get; set; }
-        public Nullable<bool> PublisherStatus { get; set; }
+        public bool PublisherStatus { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BookInfo> BookInfoes { get; set; }

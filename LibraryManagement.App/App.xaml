@@ -23,6 +23,7 @@
 
             <!-- Custom Static Resouces -->
             <ResourceDictionary Source="/Resources/ResourceXAML/ControlStyle.xaml"/>
+            <ResourceDictionary Source="/Resources/ResourceXAML/MainResource.xaml"/>
 
             <ResourceDictionary>
                <!-- Primary color -->

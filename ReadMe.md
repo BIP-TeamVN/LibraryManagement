@@ -40,10 +40,10 @@
 
 | Name                  | Role		|
 | ----------------------|-----------|
-| **Hoang** Ho Huy      | Coding	|
-| **Khanh** Lam Quoc    | PM, Coding|
+| **Hoang** Ho Huy      | Dev		|
+| **Khanh** Lam Quoc    | PM		|
 | **Nam** Tran Quoc     | Test		|
-| **Phuc** Nguyen Tran  | BA, Test	|
+| **Phuc** Nguyen Tran  | BA		|
 
 <br>
 <br>

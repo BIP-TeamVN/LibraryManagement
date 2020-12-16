@@ -23,7 +23,7 @@ namespace LibraryManagement.Model
         public long AuthorId { get; set; }
         public string NickName { get; set; }
         public string RealName { get; set; }
-        public Nullable<bool> AuthorStatus { get; set; }
+        public bool AuthorStatus { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BookInfo> BookInfoes { get; set; }

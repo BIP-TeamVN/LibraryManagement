@@ -82,26 +82,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="View\LoginWindow.xaml.cs">
-      <DependentUpon>LoginWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Resources\ResourceXAML\ControlStyle.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\LoginWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Model\Admin.cs">
-      <DependentUpon>LibraryManagementModel.tt</DependentUpon>
-    </Compile>
+    <Compile Include="AppUtils\Definition.cs" />
     <Compile Include="Model\Author.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
@@ -117,7 +98,8 @@
     <Compile Include="Model\Borrow.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\EntityProvider.cs" />
+    <Compile Include="Model\DataAccessLayer\UserDAL.cs" />
+    <Compile Include="AppUtils\EFProvider.cs" />
     <Compile Include="Model\Librarian.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
@@ -148,6 +130,133 @@
     <Compile Include="Model\User.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\AdminWindowViewModel.cs" />
+    <Compile Include="ViewModel\BaseViewModel.cs" />
+    <Compile Include="ViewModel\LibrarianWindowViewModel.cs" />
+    <Compile Include="ViewModel\LoginWindowViewModel.cs" />
+    <Compile Include="ViewModel\MemberWindowViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageAboutViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageManagerAuthorViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageManagerBookCategoryViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageManagerBookViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageManagerLibrarianViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageManagerMemberViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageManagerPublisherViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageStatisticViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageUserInfoViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModel\PageViewListBorrowBookViewModel.cs" />
+    <Compile Include="View\AdminWindow.xaml.cs">
+      <DependentUpon>AdminWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\LibrarianWindow.xaml.cs">
+      <DependentUpon>LibrarianWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\MemberWindow.xaml.cs">
+      <DependentUpon>MemberWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageAbout.xaml.cs">
+      <DependentUpon>PageAbout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageManagerAuthor.xaml.cs">
+      <DependentUpon>PageManagerAuthor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageManagerBook.xaml.cs">
+      <DependentUpon>PageManagerBook.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageManagerBookCategory.xaml.cs">
+      <DependentUpon>PageManagerBookCategory.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageManagerLibrarian.xaml.cs">
+      <DependentUpon>PageManagerLibrarian.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageManagerMember.xaml.cs">
+      <DependentUpon>PageManagerMember.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageManagerPublisher.xaml.cs">
+      <DependentUpon>PageManagerPublisher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageStatistic.xaml.cs">
+      <DependentUpon>PageStatistic.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageUserInfo.xaml.cs">
+      <DependentUpon>PageUserInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Page\PageViewListBorrowBook.xaml.cs">
+      <DependentUpon>PageViewListBorrowBook.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Resources\ResourceXAML\ControlStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\ResourceXAML\MainResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\AdminWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\LibrarianWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MemberWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageAbout.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageManagerAuthor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageManagerBook.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageManagerBookCategory.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageManagerLibrarian.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageManagerMember.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageManagerPublisher.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageStatistic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageUserInfo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Page\PageViewListBorrowBook.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -177,6 +286,27 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\Images\Icons\library-ico.psd" />
+    <Resource Include="Resources\Fonts\BigShouldersInlineText\BigShouldersInlineText-Black.ttf" />
+    <Resource Include="Resources\Fonts\BigShouldersInlineText\BigShouldersInlineText-Bold.ttf" />
+    <Resource Include="Resources\Fonts\BigShouldersInlineText\BigShouldersInlineText-ExtraBold.ttf" />
+    <Resource Include="Resources\Fonts\BigShouldersInlineText\BigShouldersInlineText-Light.ttf" />
+    <Resource Include="Resources\Fonts\BigShouldersInlineText\BigShouldersInlineText-Medium.ttf" />
+    <Resource Include="Resources\Fonts\BigShouldersInlineText\BigShouldersInlineText-Regular.ttf" />
+    <Resource Include="Resources\Fonts\BigShouldersInlineText\BigShouldersInlineText-SemiBold.ttf" />
+    <Resource Include="Resources\Fonts\BigShouldersInlineText\BigShouldersInlineText-Thin.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-Black.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-BlackItalic.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-Bold.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-BoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-Italic.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-Light.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-LightItalic.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-Medium.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-MediumItalic.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-Regular.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-Thin.ttf" />
+    <Resource Include="Resources\Fonts\Roboto\Roboto-ThinItalic.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -192,6 +322,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\library-ico.ico" />
+    <Resource Include="Resources\Images\login-window-background.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
     <Content Include="Model\LibraryManagementModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>LibraryManagementModel.edmx</DependentUpon>
@@ -202,10 +340,6 @@
       <DependentUpon>LibraryManagementModel.edmx</DependentUpon>
       <LastGenOutput>LibraryManagementModel.cs</LastGenOutput>
     </Content>
-    <Resource Include="Resources\Images\LoginWindowBackground.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets')" />
