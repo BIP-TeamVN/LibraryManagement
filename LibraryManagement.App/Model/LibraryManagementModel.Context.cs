@@ -25,7 +25,6 @@ namespace LibraryManagement.Model
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Admin> Admins { get; set; }
         public virtual DbSet<Author> Authors { get; set; }
         public virtual DbSet<BookCategory> BookCategories { get; set; }
         public virtual DbSet<BookInfo> BookInfoes { get; set; }

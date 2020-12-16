@@ -22,8 +22,8 @@ namespace LibraryManagement.Model
     
         public long BookCategoryId { get; set; }
         public string BookCategoryName { get; set; }
-        public Nullable<int> Limitdays { get; set; }
-        public Nullable<bool> BookCategoryStatus { get; set; }
+        public Nullable<int> LimitDays { get; set; }
+        public bool BookCategoryStatus { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BookInfo> BookInfoes { get; set; }

@@ -29,7 +29,9 @@ namespace LibraryManagement.Model
         public Nullable<int> PageNumber { get; set; }
         public string Size { get; set; }
         public Nullable<decimal> Price { get; set; }
+        public int Count { get; set; }
         public Nullable<bool> BookInfoStatus { get; set; }
+        public string Image { get; set; }
     
         public virtual BookCategory BookCategory { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
