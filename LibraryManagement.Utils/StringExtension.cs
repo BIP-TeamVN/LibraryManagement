@@ -44,5 +44,18 @@ namespace LibraryManagement.Utils
          if (string.IsNullOrEmpty(str)) { return ""; }
          else { return str.Trim(); }
       }
+
+      public static string RemoveNonDigit(this string str)
+      {
+         if (string.IsNullOrEmpty(str)) { return ""; }
+         else
+         {
+            for (int i = str.Length - 1; i >= 0; i--)
+            {
+               if (!char.IsDigit(str, i)) { str = str.Remove(i, 1); }
+            }
+            return str;
+         }
+      }
    }
 }

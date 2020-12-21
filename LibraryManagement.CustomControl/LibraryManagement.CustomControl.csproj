@@ -62,6 +62,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DigitTextBox.cs" />
     <Compile Include="DragMoveGrid.cs" />
     <Compile Include="MouseWheelScrollViewer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
