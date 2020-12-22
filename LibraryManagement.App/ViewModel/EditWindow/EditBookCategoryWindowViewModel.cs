@@ -4,9 +4,12 @@ using System.Windows;
 
 namespace LibraryManagement.ViewModel
 {
-   public class EditBookWindowViewModel : EditWindowBaseViewModel<BookInfo>
+   public class EditBookCategoryWindowViewModel : EditWindowBaseViewModel<BookCategory>
    {
-      public EditBookWindowViewModel(BookInfo editBookInfo = null) : base(editBookInfo)
+      public string ErrorLimitDays { get => errorLimitDays; set { errorLimitDays = value; OnPropertyChanged(nameof(ErrorLimitDays)); } }
+      public string ErrorBookCategoryName { get => errorBookCategoryName; set { errorBookCategoryName = value; OnPropertyChanged(nameof(ErrorBookCategoryName)); } }
+
+      public EditBookCategoryWindowViewModel(BookCategory editBookCategory = null) : base(editBookCategory)
       {
       }
 
@@ -14,16 +17,16 @@ namespace LibraryManagement.ViewModel
       {
          bool missingInput = false;
 
-         /*if (!string.IsNullOrEmpty(EditObject.BookCategoryName)) { ErrorBookCategoryName = ""; }
+         if (!string.IsNullOrEmpty(EditObject.BookCategoryName)) { ErrorBookCategoryName = ""; }
          else { ErrorBookCategoryName = "Tên chuyên mục không được để trống"; missingInput = true; }
 
          if (EditObject.LimitDays != 0) { ErrorLimitDays = ""; }
-         else { ErrorLimitDays = "Nhập số ngày cho mượn"; missingInput = true; }*/
+         else { ErrorLimitDays = "Nhập số ngày cho mượn"; missingInput = true; }
 
          return !missingInput;
       }
 
-      protected override void Load(BookInfo editObject)
+      protected override void Load(BookCategory editObject)
       {
          if (editObject != null)
          {
@@ -34,9 +37,10 @@ namespace LibraryManagement.ViewModel
          else
          {
             Mode = EditMode.Add;
-            EditObject = new BookInfo()
+            EditObject = new BookCategory()
             {
-               BookInfoStatus = true
+               LimitDays = 10,
+               BookCategoryStatus = true
             };
             EditTitleText = "THÊM CHUYÊN MỤC MỚI";
          }
@@ -49,7 +53,7 @@ namespace LibraryManagement.ViewModel
 
          if (Mode == EditMode.Add)
          {
-            if (BookInfoDAL.Instance.Add(EditObject) != 0)
+            if (BookCategoryDAL.Instance.Add(EditObject) != 0)
             {
                EditResult = true;
                p.Close();
@@ -58,7 +62,7 @@ namespace LibraryManagement.ViewModel
          }
          else
          {
-            if (BookInfoDAL.Instance.Update(EditObject))
+            if (BookCategoryDAL.Instance.Update(EditObject))
             {
                EditResult = true;
                p.Close();
@@ -66,5 +70,10 @@ namespace LibraryManagement.ViewModel
             else { CustomMessageBox.Show("Cập nhật thông tin thất bại", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error); }
          }
       }
+
+      #region field
+      string errorLimitDays;
+      string errorBookCategoryName;
+      #endregion
    }
 }
