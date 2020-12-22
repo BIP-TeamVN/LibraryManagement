@@ -47,6 +47,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=5.5.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.5.5.0\lib\net45\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="MaterialDesignColors, Version=1.2.7.1979, Culture=neutral, PublicKeyToken=df2a72020bd7962a, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialDesignColors.1.2.7\lib\net45\MaterialDesignColors.dll</HintPath>
     </Reference>
@@ -56,11 +59,20 @@
     <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.3.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.1.3.6\lib\net46\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -83,7 +95,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppUtils\Definition.cs" />
-	<Compile Include="AppUtils\EFProvider.cs" />
+    <Compile Include="AppUtils\EFProvider.cs" />
     <Compile Include="AppUtils\Logger.cs" />
     <Compile Include="Enum\EStatusFillter.cs" />
     <Compile Include="Interface\IDataGet.cs" />
@@ -104,7 +116,15 @@
     <Compile Include="Model\Borrow.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\DataAccessLayer\AuthorDAL.cs" />
+    <Compile Include="Model\DataAccessLayer\BookCategoryDAL.cs" />
+    <Compile Include="Model\DataAccessLayer\BookInfoDAL.cs" />
+    <Compile Include="Model\DataAccessLayer\PublisherDAL.cs" />
     <Compile Include="Model\DataAccessLayer\UserDAL.cs" />
+    <Compile Include="Model\ExtensionEntityModel\Author.cs" />
+    <Compile Include="Model\ExtensionEntityModel\BookCategory.cs" />
+    <Compile Include="Model\ExtensionEntityModel\BookInfo.cs" />
+    <Compile Include="Model\ExtensionEntityModel\Publisher.cs" />
     <Compile Include="Model\ExtensionEntityModel\User.cs" />
     <Compile Include="Model\Librarian.cs">
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
@@ -137,7 +157,10 @@
       <DependentUpon>LibraryManagementModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\BaseObject\BaseViewModel.cs" />
-	<Compile Include="ViewModel\AdminWindowViewModel.cs" />
+    <Compile Include="ViewModel\AdminWindowViewModel.cs" />
+    <Compile Include="ViewModel\BaseObject\EditWindowBaseViewModel.cs" />
+    <Compile Include="ViewModel\BaseObject\PageManagerBaseViewModel.cs" />
+    <Compile Include="ViewModel\EditWindow\EditBookWindowViewModel.cs" />
     <Compile Include="ViewModel\LibrarianWindowViewModel.cs" />
     <Compile Include="ViewModel\LoginWindowViewModel.cs" />
     <Compile Include="ViewModel\MemberWindowViewModel.cs" />
@@ -153,6 +176,9 @@
     <Compile Include="ViewModel\PageViewModel\PageViewListBorrowBookViewModel.cs" />
     <Compile Include="View\AdminWindow.xaml.cs">
       <DependentUpon>AdminWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditWindow\EditBookWindow.xaml.cs">
+      <DependentUpon>EditBookWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\LibrarianWindow.xaml.cs">
       <DependentUpon>LibrarianWindow.xaml</DependentUpon>
@@ -208,6 +234,10 @@
     <Page Include="View\AdminWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditWindow\EditBookWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\LibrarianWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
