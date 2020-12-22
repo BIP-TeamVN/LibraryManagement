@@ -1,5 +1,6 @@
 ﻿using LibraryManagement.Utils;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace LibraryManagement.CustomControl
 {
