@@ -23,9 +23,12 @@ namespace LibraryManagement.ViewModel
       public UserControl PageManagerAuthor { get; set; }
       public UserControl PageStatistic { get; set; }
       public UserControl PageAbout { get; set; }
-      
+      public User UserLogin { get; }
+
       public AdminWindowViewModel(User userLogin)
       {
+         UserLogin = userLogin;
+
          LoadedWindow = new RelayCommand<Window>((p) => { return (p != null); }, (p) =>
          {
             this.WindowTitle = "Library Management - Admin";
@@ -79,6 +82,17 @@ namespace LibraryManagement.ViewModel
                   break;
 
                case "mnuLogout":
+                  var messageResult = CustomControl.CustomMessageBox.Show("Bạn có thực sự muốn đăng xuất ?", "Cảnh báo", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                  if (messageResult == MessageBoxResult.Yes)
+                  {
+                     System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+                     Application.Current.Shutdown();
+                  }
+                  else
+                  {
+                     lvNavigationMenu.SelectedIndex = 0;
+                     NavSelectionChangedCommand.Execute(p);
+                  }
                   break;
             }
          });
