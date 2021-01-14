@@ -82,7 +82,7 @@ namespace LibraryManagement.Model
             }
          }
          catch (Exception e) { Logger.Log(e.Message); }
-         
+
          return false;
       }
 
@@ -95,7 +95,7 @@ namespace LibraryManagement.Model
             return true;
          }
          catch (Exception e) { Logger.Log(e.Message); }
-         
+
          return false;
       }
 
