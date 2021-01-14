@@ -3,11 +3,11 @@
 namespace LibraryManager.EntityFramework
 {
    /// <summary>
-   /// Interaction logic for LoginWindow.xaml
+   /// Interaction logic for LibrarianWindow.xaml
    /// </summary>
-   public partial class LoginWindow : Window
+   public partial class LibrarianWindow : Window
    {
-      public LoginWindow()
+      public LibrarianWindow()
       {
          InitializeComponent();
       }

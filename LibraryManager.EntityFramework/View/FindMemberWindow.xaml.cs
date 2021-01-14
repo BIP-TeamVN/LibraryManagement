@@ -3,11 +3,11 @@
 namespace LibraryManager.EntityFramework
 {
    /// <summary>
-   /// Interaction logic for LoginWindow.xaml
+   /// Interaction logic for FindMemberWindow.xaml
    /// </summary>
-   public partial class LoginWindow : Window
+   public partial class FindMemberWindow : Window
    {
-      public LoginWindow()
+      public FindMemberWindow()
       {
          InitializeComponent();
       }

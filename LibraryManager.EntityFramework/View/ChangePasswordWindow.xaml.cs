@@ -3,11 +3,11 @@
 namespace LibraryManager.EntityFramework
 {
    /// <summary>
-   /// Interaction logic for LoginWindow.xaml
+   /// Interaction logic for ChangePasswordWindow.xaml
    /// </summary>
-   public partial class LoginWindow : Window
+   public partial class ChangePasswordWindow : Window
    {
-      public LoginWindow()
+      public ChangePasswordWindow()
       {
          InitializeComponent();
       }
