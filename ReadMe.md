@@ -18,7 +18,7 @@
 ## Project Structure
 <pre>
 <b>LibraryManagement</b> (solution)
-├── <b>LibraryManagement.App</b> (WPF App project)
+├── <b>LibraryManager.EntityFramework</b> (WPF App project)
 │   ├── Model
 │   │   ├── DAL (Data access layer)
 │   │   │   ├── ... class insert, update, delete using EF DB Context
@@ -26,10 +26,10 @@
 │   │   │   ├── ... contain derived classes from EF DB Context
 │   │   ├── Entity (*.edmx)
 │   ├── ViewModel
-│   ├── ... all View item will display here
-├── <b>LibraryManagement.CustomControl</b> (WPF Custom Control Library project)
+│   ├── View
+├── <b>LibraryManager.CustomControl</b> (WPF Custom Control Library project)
 │   ├── ... 
-├── <b>LibraryManagement.Utils</b> (Class library project)
+├── <b>LibraryManager.Utils</b> (Class library project)
 └── LibraryManagement.sln
 </pre>
 
