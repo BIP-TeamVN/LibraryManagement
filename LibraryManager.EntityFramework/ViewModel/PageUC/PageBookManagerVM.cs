@@ -1,4 +1,4 @@
-﻿using LibraryManager.EntityFramework.Model;
+using LibraryManager.EntityFramework.Model;
 using LibraryManager.EntityFramework.View;
 using LibraryManager.MyUserControl.MyBox;
 using LibraryManager.Utils;

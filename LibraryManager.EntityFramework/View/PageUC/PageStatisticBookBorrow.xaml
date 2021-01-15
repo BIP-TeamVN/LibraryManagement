@@ -13,4 +13,97 @@
              mc:Ignorable="d" x:Name="pageStatisticBookBorrow"
              d:DesignHeight="734" d:DesignWidth="1300" Background="#fafafa">
 
+    <materialDesign:Card Grid.Row="1" Margin="5 2.5 2.5 2.5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Các sách đã mượn-->
+            <TextBlock Margin="20 20 20 5" Grid.Row="0" Style="{StaticResource TitleTextBlock}">
+                <Run Text="Sách: " />
+                <Run Text="{Binding BookStatistic.Title, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+            </TextBlock>
+
+            <!-- List mượn-->
+            <ScrollViewer Margin="20 5 20 20" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="1">
+                <ListView ItemsSource="{Binding ListBookBorrow, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Mã NV">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="Black" Text="{Binding Librarian.Id}"></TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Tên NV">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="Black" Text="{Binding LibrarianName}"></TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Mã người mượn">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="Black" Text="{Binding Member.Id}"></TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Tên người mượn">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="Black" Text="{Binding MemberName}"></TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Người cho mượn">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="Black" Text="{Binding LibrarianName}"></TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Ngày mượn">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="Black" Text="{Binding Path=BorrowDate, StringFormat='dd/MM/yyyy'}"></TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Hạn trả">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="Black" Text="{Binding Path=TermDate, StringFormat='dd/MM/yyyy'}"></TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </ScrollViewer>
+
+            <Button Grid.Row="2" ToolTip="Trở về" Style="{StaticResource DarkBlueButton}" HorizontalAlignment="Right" Width="200" Height="50" Margin="20 10 20 20"
+                    Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=pageStatisticBookBorrow}">
+                <Grid Width="160" Height="40" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Column="0" Kind="ArrowBackCircle" Width="40" Height="40" />
+                    <TextBlock Grid.Column="1" FontSize="20" Text="TRỞ LẠI" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Grid>
+            </Button>
+        </Grid>
+    </materialDesign:Card>
 </UserControl>

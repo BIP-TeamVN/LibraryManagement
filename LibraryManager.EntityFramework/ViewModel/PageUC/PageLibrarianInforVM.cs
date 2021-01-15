@@ -1,4 +1,4 @@
-﻿using LibraryManager.EntityFramework.Model;
+using LibraryManager.EntityFramework.Model;
 using LibraryManager.Utils;
 using MaterialDesignThemes.Wpf;
 using System.Windows;
