@@ -122,6 +122,11 @@
     <Compile Include="Model\Borrow.cs">
       <DependentUpon>LibraryManager.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\DataAccessLayer\AccountDAL.cs" />
+    <Compile Include="Model\DataAccessLayer\LibrarianDAL.cs" />
+    <Compile Include="Model\DataAccessLayer\MemberDAL.cs" />
+    <Compile Include="Model\DataTransferObject\LibrarianDTO.cs" />
+    <Compile Include="Model\DataTransferObject\MemberDTO.cs" />
     <Compile Include="Model\EFProvider.cs" />
     <Compile Include="Model\Librarian.cs">
       <DependentUpon>LibraryManager.tt</DependentUpon>
