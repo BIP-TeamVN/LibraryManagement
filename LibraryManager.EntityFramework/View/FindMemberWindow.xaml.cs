@@ -10,6 +10,7 @@ namespace LibraryManager.EntityFramework
       public FindMemberWindow()
       {
          InitializeComponent();
+         cmbMemberId.Focus();
       }
    }
 }
