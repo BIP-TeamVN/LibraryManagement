@@ -10,6 +10,7 @@ namespace LibraryManager.EntityFramework.View
       public AddMemberWindow()
       {
          InitializeComponent();
+         txtLastName.Focus();
       }
    }
 }

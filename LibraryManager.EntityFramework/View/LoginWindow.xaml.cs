@@ -10,6 +10,7 @@ namespace LibraryManager.EntityFramework
       public LoginWindow()
       {
          InitializeComponent();
+         txtUsername.Focus();
       }
    }
 }
