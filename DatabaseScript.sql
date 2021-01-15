@@ -1,467 +1,559 @@
+--Thông tin về các cá nhân được tạo ra một cách ngẫu nhiên và không có thật
+
 USE master
 GO
 
-IF EXISTS (SELECT name FROM sys.databases WHERE name = N'LibraryManagement')
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'LibraryManager')
 BEGIN
-	ALTER DATABASE [LibraryManagement] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
-	DROP DATABASE IF EXISTS [LibraryManagement]
+	ALTER DATABASE [LibraryManager] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+	DROP DATABASE IF EXISTS [LibraryManager]
 END
 GO
 
-CREATE DATABASE [LibraryManagement]
-GO
-USE [LibraryManagement]
+CREATE DATABASE LibraryManager
 GO
 
-
------------------------------------------------------------
------------Create table------------------------------------
------------------------------------------------------------
-DROP TABLE IF EXISTS [dbo].[User]
-CREATE TABLE [dbo].[User](
-	[UserId] BIGINT IDENTITY(1, 1),
-	[FirstName] NVARCHAR(10) NULL,
-	[LastName] NVARCHAR(30) NULL,
-	[Gender] VARCHAR(1) NULL,						-- M = male, F = female, O = orther
-	[DateOfBirth] DATE NOT NULL,
-	[Ssn] VARCHAR(12) NULL,
-
-	[Address] NVARCHAR(100) NULL,
-	[PhoneNumber] VARCHAR(15) NULL,
-	[Email] VARCHAR(50) NULL,
-
-	[Username] VARCHAR(16) UNIQUE NOT NULL,
-	[Password] VARCHAR(32) NOT NULL,
-	[UserType] VARCHAR(15) NOT NULL DEFAULT 'MEMBER',	-- loại tài khoản admin = 'ADMIN', thủ thư = 'LIBRARIAN', độc giả = 'MEMBER', chưa xác thực thông tin = 'UN_VERIFIED'
-	[UserStatus] BIT DEFAULT 1 NOT NULL,
-	[Image] TEXT NULL
-)
-GO
-ALTER TABLE [dbo].[User] ADD CONSTRAINT [PK_User] PRIMARY KEY([UserId])
+USE LibraryManager
 GO
 
 
--- Set nullable unique for column email
-CREATE UNIQUE NONCLUSTERED INDEX IDX_User_Email_Unique_Nullable ON [dbo].[User]([Email]) WHERE [Email] IS NOT NULL
-CREATE UNIQUE NONCLUSTERED INDEX IDX_User_PhoneNumber_Unique_Nullable ON [dbo].[User]([PhoneNumber]) WHERE [PhoneNumber] IS NOT NULL
-GO
-
-
--- tài khoản thủ thư
-DROP TABLE IF EXISTS [dbo].[Librarian]
-CREATE TABLE [dbo].[Librarian] (
-	[UserId] BIGINT NOT NULL,
-
-	[StartDate] DATE DEFAULT GETDATE() NOT NULL,
-	[Salary] DECIMAL(19, 4) NULL,
-)
-GO
-ALTER TABLE [dbo].[Librarian] ADD CONSTRAINT [pk_librarian] PRIMARY KEY ([UserId])
-ALTER TABLE [dbo].[Librarian] ADD CONSTRAINT [fk_user_librarian] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId])
-GO
-
--- tài khoản độc giả
-DROP TABLE IF EXISTS [dbo].[Member]
-CREATE TABLE [dbo].[Member] (
-	[UserId] BIGINT NOT NULL,
-
-	[RegisterDate] DATE DEFAULT GETDATE() NOT NULL,		-- ngày đăng ký
-	[ExpDate] DATE DEFAULT GETDATE() NOT NULL,			-- ngày hết hạn
-)
-GO
-ALTER TABLE [dbo].[Member] ADD CONSTRAINT [pk_member] PRIMARY KEY ([UserId])
-ALTER TABLE [dbo].[Member] ADD CONSTRAINT [fk_user_member] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId])
-GO
-
---tác giả của sách
-DROP TABLE IF EXISTS [dbo].[Author]
-CREATE TABLE [dbo].[Author]
+-- Tạo bảng Librarian
+CREATE TABLE dbo.Librarian
 (
-	[AuthorId] BIGINT IDENTITY(1,1),
-	[NickName] NVARCHAR(40) NOT NULL,	-- bút danh
-	[RealName] NVARCHAR(50) NULL,		-- tên thật
-	[AuthorStatus] BIT DEFAULT 1 NOT NULL,
+	Id VARCHAR(6) PRIMARY KEY,
+	FirstName NVARCHAR(10) NULL,
+	LastName NVARCHAR(20) NULL,
+	Birthday DATE NULL,
+	Sex NVARCHAR(5) NULL,
+	SSN VARCHAR(12) NULL,
+	Address NVARCHAR(100) NULL,
+	PhoneNumber VARCHAR(15) NOT NULL,
+	Email VARCHAR(30) NULL,
+
+	StartDate  DATE DEFAULT GETDATE() NULL,
+	Salary DECIMAL(19, 0) NULL,
+	Status BIT DEFAULT 1 NULL
 )
 GO
-ALTER TABLE [dbo].[Author] ADD CONSTRAINT [pk_author] PRIMARY KEY ([AuthorId])
+
+--Account for Admin
+INSERT INTO dbo.Librarian (Id, LastName,PhoneNumber, Status) VALUES ('LIB000', N'Quản trị viên','', 1)
 GO
 
--- nhà xuất bản
-DROP TABLE IF EXISTS [dbo].[Publisher]
-CREATE TABLE [dbo].[Publisher]
+-- Tạo bảng Member
+CREATE TABLE dbo.Member
 (
-	[PublisherId] BIGINT IDENTITY(1, 1),
-	[PublisherName] NVARCHAR(100) NOT NULL,
+	Id VARCHAR(10) PRIMARY KEY,
+	FirstName NVARCHAR(10) NULL,
+	LastName NVARCHAR(20) NULL,
+	Birthday DATE NULL,
+	Sex NVARCHAR(5) NULL,
+	SSN VARCHAR(12) NULL,
+	Address NVARCHAR(100) NULL,
+	PhoneNumber VARCHAR(15) NOT NULL,
+	Email VARCHAR(30) NULL,
 
-	[PhoneNumber] VARCHAR(15) NULL,
-	[Address] NVARCHAR(100) NULL,
-	[Email] VARCHAR(50) NULL,
-	[Website] VARCHAR(40) NULL,
-
-	[PublisherStatus] BIT DEFAULT 1 NOT NULL,
+	RegisterDate DATE DEFAULT GETDATE() NULL,
+	Status BIT DEFAULT 1 NULL
 )
 GO
-ALTER TABLE [dbo].[Publisher] ADD CONSTRAINT [pk_publisher] PRIMARY KEY ([PublisherId])
-GO
 
--- danh mục sách
-DROP TABLE IF EXISTS [dbo].[BookCategory]
-CREATE TABLE [dbo].[BookCategory]
+-- Tạo bảng Account
+CREATE TABLE dbo.Account
 (
-	[BookCategoryId] BIGINT IDENTITY(1, 1),		
-	[BookCategoryName] NVARCHAR(50) NULL,		-- tên chuyên mục
-	[LimitDays] INT NULL,						-- số ngày cho mượn
-	[BookCategoryStatus] BIT DEFAULT 1 NOT NULL
-)
-GO
-ALTER TABLE [dbo].[BookCategory] ADD CONSTRAINT [pk_book_category] PRIMARY KEY([BookCategoryId])
-GO
-
-
--- đầu sách
-DROP TABLE IF EXISTS [dbo].[BookInfo]
-CREATE TABLE [dbo].[BookInfo]
-(
-	[BookInfoId] BIGINT IDENTITY(1, 1),
-	[Title] NVARCHAR(100) NULL,					-- tựa sách
-
-	[BookCategoryId] BIGINT NULL,				-- mã chuyên mục
-	[PublisherId] BIGINT NOT NULL,				-- mã nxb
-
-	[YearPublished] INT NULL,					-- năm xb
-	[PageNumber] INT NULL,						-- số trang
-	[Size] VARCHAR(11) NULL,					-- kích thước
-	[Price] DECIMAL(19, 0) NULL,				-- giá tiền
-
-	[Count] INT NOT NULL CHECK([Count] > 0),	-- số lượng cuốn sách
-	[BookInfoStatus] BIT DEFAULT 1 NULL,
-	[Image] TEXT NULL
+	PersonId varchar(10) NOT NULL PRIMARY KEY,
+	Username varchar(20) UNIQUE NOT NULL,
+	Password varchar(32) NOT NULL,
+	AccountType INT DEFAULT 2 NOT NULL	-- 0: admin , 1: librarian, 2: member
 )
 GO 
-ALTER TABLE [dbo].[BookInfo] ADD CONSTRAINT [PK_BookInfo] PRIMARY KEY ([BookInfoId])
-ALTER TABLE [dbo].[BookInfo] ADD CONSTRAINT [PK_BookInfo_BookCategory] FOREIGN KEY ([BookCategoryId]) REFERENCES [dbo].[BookCategory]([BookCategoryId])
-ALTER TABLE [dbo].[BookInfo] ADD CONSTRAINT [PK_BookInfo_Publisher]  FOREIGN KEY([PublisherId]) REFERENCES [dbo].[Publisher]([PublisherId])
-ALTER TABLE [dbo].[BookInfo] ADD CONSTRAINT [CK_BookInfo_Count] CHECK ([Count] > 0)
-GO
 
--- cuốn sách
-DROP TABLE IF EXISTS [dbo].[BookItem]
-CREATE TABLE [dbo].[BookItem] (
-	[BookItemId] VARCHAR(20) NOT NULL,
-	[BookInfoId] BIGINT NOT NULL
-)
-GO
-ALTER TABLE [dbo].[BookItem] ADD CONSTRAINT [pk_book_item] PRIMARY KEY ([BookItemId])
-ALTER TABLE [dbo].[BookItem] ADD CONSTRAINT [fk_book_book_item] FOREIGN KEY ([BookInfoId]) REFERENCES [dbo].[BookInfo]([BookInfoId])
-GO
-
--- quan hệ nhiều nhiều book - author
-DROP TABLE IF EXISTS [dbo].[BookAuthor]
-CREATE TABLE [dbo].[BookAuthor] (
-	[BookInfoId] BIGINT NOT NULL,
-	[AuthorId] BIGINT NOT NULL,
-)
-GO
-ALTER TABLE [dbo].[BookAuthor] ADD CONSTRAINT [pk_book_author] PRIMARY KEY ([BookInfoId], [AuthorId])
-ALTER TABLE [dbo].[BookAuthor] ADD CONSTRAINT [fk_book_author_book] FOREIGN KEY ([BookInfoId]) REFERENCES [dbo].[BookInfo]([BookInfoId])
-ALTER TABLE [dbo].[BookAuthor] ADD CONSTRAINT [fk_book_author_author] FOREIGN KEY ([AuthorId]) REFERENCES [dbo].[Author]([AuthorId])
-GO
-
-
--- mượn sách
-DROP TABLE IF EXISTS [dbo].[Borrow]
-CREATE TABLE [dbo].[Borrow]
+--Tạo bảng Author
+CREATE TABLE dbo.Author
 (
-	[BorrowId] BIGINT IDENTITY(1,1),
-	[BookItemId] VARCHAR(20) NOT NULL,					-- mã cuốn sách
-
-	[MemberId] BIGINT NOT NULL,							-- mã đọc giả
-	[LibrarianId] BIGINT NOT NULL,						-- mã thủ thư cho mượn sách
-	
-	[BorrowDate] DATE NOT NULL DEFAULT GETDATE(),		-- ngày mượn
-	[Status] BIT DEFAULT 1 NOT NULL						-- trạng thái 1 = đang mượn, 0 = đã trả
+	Id int IDENTITY(1,1) PRIMARY KEY,
+	NickName NVARCHAR(40) NULL,
+	Status BIT DEFAULT 1 NULL,
 )
-GO
-ALTER TABLE [dbo].[Borrow] ADD CONSTRAINT [pk_borrow] PRIMARY KEY([BorrowId])
-ALTER TABLE [dbo].[Borrow] ADD CONSTRAINT [pk_borrow_book_item] FOREIGN KEY ([BookItemId]) REFERENCES [dbo].[BookItem]([BookItemId])
-ALTER TABLE [dbo].[Borrow] ADD CONSTRAINT [fk_borrow_member] FOREIGN KEY([MemberId]) REFERENCES [dbo].[Member]([UserId])
-ALTER TABLE [dbo].[Borrow] ADD CONSTRAINT [fk_borrow_librarian] FOREIGN KEY([LibrarianId]) REFERENCES [dbo].[Librarian]([UserId])
-GO
+GO 
 
-
--- trả sách
-DROP TABLE IF EXISTS [dbo].[Return]
-CREATE TABLE [dbo].[Return] (
-	[BorrowId] BIGINT NOT NULL,
-	[ReturnDate] DATE NOT NULL DEFAULT GETDATE(),		-- ngày trả
-	[LibrarianId] BIGINT NOT NULL,						-- mã thủ thư nhận sách
+-- Tạo bảng Publisher
+CREATE TABLE dbo.Publisher
+(
+	Id INT IDENTITY(1, 1) PRIMARY KEY,
+	Name NVARCHAR(100) NOT NULL,
+	PhoneNumber VARCHAR(15) NULL,
+	Address NVARCHAR(100) NULL,
+	Email VARCHAR(30) NULL,
+	Website VARCHAR(40) NULL,
+	Status BIT DEFAULT 1 NULL,
 )
-GO
-ALTER TABLE [dbo].[Return] ADD CONSTRAINT [pk_return] PRIMARY KEY([BorrowId], [ReturnDate])
-ALTER TABLE [dbo].[Return] ADD CONSTRAINT [fk_return_borrow] FOREIGN KEY ([BorrowId]) REFERENCES [dbo].[Borrow]([BorrowId])
-ALTER TABLE [dbo].[Return] ADD CONSTRAINT [fk_return_librarian] FOREIGN KEY([LibrarianId]) REFERENCES [dbo].[Librarian]([UserId])
-GO
+GO 
 
------------------------------------------------------------
------------FUNCTION----------------------------------------
------------------------------------------------------------
-CREATE OR ALTER FUNCTION [UFN_CheckPhoneNumber] (@PHONE_NUMBER_TO_CHECK NVARCHAR(15))
-RETURNS BIT AS 
-BEGIN
-	DECLARE @C INT
-	SELECT @C = COUNT(*) FROM [dbo].[User] AS U WHERE @PHONE_NUMBER_TO_CHECK = [U].[PhoneNumber] 
-	RETURN (CASE WHEN @C > 0 THEN 0 ELSE 1 END)
-END
-GO
+-- Tạo bảng BookCategory
+CREATE TABLE dbo.BookCategory
+(
+	Id INT IDENTITY(1, 1) PRIMARY KEY,
+	Name NVARCHAR(50) NULL,
+	LimitDays INT NULL,
+	Status BIT DEFAULT 1 NULL
+)
+GO 
 
-CREATE OR ALTER FUNCTION [UFN_CheckEmail] (@EMAIL_TO_CHECK NVARCHAR(50))
-RETURNS BIT AS 
-BEGIN
-	DECLARE @C INT
-	SELECT @C = COUNT(*) FROM [dbo].[User] AS U WHERE @EMAIL_TO_CHECK = [U].[Email]
-	RETURN (CASE WHEN @C > 0 THEN 0 ELSE 1 END)
-END
-GO
+-- Tạo bảng Book
+CREATE TABLE dbo.Book
+(
+	Id VARCHAR(10) PRIMARY KEY,
+	Title NVARCHAR(100) NULL,
+	PublisherId INT NOT NULL,
+	YearPublish INT NULL,
+	BookCategoryId INT NULL,
+	PageNumber INT NULL,
+	Size VARCHAR(11) NULL,
+	Price DECIMAL(19, 0) NULL,
+	Status BIT DEFAULT 1 NULL
+
+	FOREIGN KEY(PublisherId) REFERENCES dbo.Publisher(Id),
+	FOREIGN KEY(BookCategoryId) REFERENCES dbo.BookCategory(Id)
+)
+GO 
+
+-- Tạo bảng BookItem
+CREATE TABLE dbo.BookItem
+(
+	BookId VARCHAR(10) PRIMARY KEY,
+	Number INT NULL,
+	Count INT NULL,
+	Status BIT DEFAULT 1 NULL
+
+	FOREIGN KEY(BookId) REFERENCES dbo.Book(Id)
+)
+GO 
 
 
------------------------------------------------------------
------------PROCEDURE---------------------------------------
------------------------------------------------------------
-CREATE OR ALTER PROCEDURE [USP_InsertBookItem]
-	@BOOK_INFO_ID BIGINT
-AS BEGIN
-	DECLARE @BOOK_COUNT INT, @i INT = 1, @BOOK_ITEM_ID NVARCHAR(20)
-	SELECT @BOOK_COUNT = [Count] FROM [dbo].[BookInfo] WHERE [BookInfoId] = @BOOK_INFO_ID
+-- Tạo bảng BookAuthor
+CREATE TABLE dbo.BookAuthor
+(
+	BookId VARCHAR(10) NOT NULL,
+	AuthorId INT NOT NULL
 
-	WHILE @i <= @BOOK_COUNT
+	PRIMARY KEY(BookId, AuthorId),
+	FOREIGN KEY(BookId) REFERENCES dbo.Book(Id),
+	FOREIGN KEY(AuthorId) REFERENCES dbo.Author(Id)
+)
+GO 
+
+-- Tạo bảng Borrow
+CREATE TABLE dbo.Borrow
+(
+	Id int IDENTITY(1,1) PRIMARY KEY,
+	BookId VARCHAR(10) NOT NULL,
+	MemberId VARCHAR(10) NOT NULL,
+	LibrarianId VARCHAR(6) NOT NULL,
+	BorrowDate DATE NOT NULL,
+	Status BIT DEFAULT 1 NOT NULL
+
+	FOREIGN KEY(BookId) REFERENCES dbo.Book(Id),
+	FOREIGN KEY(MemberId) REFERENCES dbo.Member(Id),
+	FOREIGN KEY(LibrarianId) REFERENCES dbo.Librarian(Id)
+)
+GO 
+
+-- Tạo bảng Return
+CREATE TABLE dbo.ReturnBook
+(
+	Id int IDENTITY(1,1) PRIMARY KEY,
+	BorrowId INT NOT NULL,
+	ReturnDate DATE DEFAULT GETDATE() NOT NULL,
+	LibrarianId VARCHAR(6) NOT NULL
+
+	FOREIGN KEY(BorrowId) REFERENCES dbo.Borrow(Id),
+	FOREIGN KEY(LibrarianId) REFERENCES dbo.Librarian(Id)
+)
+GO 
+
+-- Tạo bảng PayFineInfo
+CREATE TABLE dbo.PayFineInfo
+(
+	Id int IDENTITY(1,1) PRIMARY KEY,
+	BorrowId INT NOT NULL,
+	Cash DECIMAL(19, 0) NOT NULL
+
+	FOREIGN KEY(BorrowId) REFERENCES dbo.Borrow(Id)
+)
+GO 
+
+
+-- Tạo hàm để tự tăng ID
+CREATE FUNCTION Func_NextLibrarianId(@lastLibrarianId VARCHAR(6), @preFix VARCHAR(3), @size INT)
+RETURNS VARCHAR(6)
+AS
 	BEGIN
-		SET @BOOK_ITEM_ID = CONCAT('B', FORMAT(@BOOK_INFO_ID, 'D13'), '_', FORMAT(@i, 'D5'))
-		INSERT INTO	[dbo].[BookItem] ([BookItemId], [BookInfoId]) VALUES (@BOOK_ITEM_ID, @BOOK_INFO_ID)
-		SET @i = @i + 1
+		IF (@lastLibrarianId = '')
+			SET @lastLibrarianId = @preFix + REPLICATE(0, @size - LEN(@preFix))
+
+		DECLARE @num_nextLibrarianId INT, @nextLibrarianId VARCHAR(6)
+
+		SET @lastLibrarianId = LTRIM(RTRIM(@lastLibrarianId))
+		SET @num_nextLibrarianId = REPLACE(@lastLibrarianId, @preFix,'') + 1
+		SET @size = @size - LEN(@preFix)
+		SET @nextLibrarianId = @preFix + REPLICATE(0, @size - LEN(@preFix))
+		SET @nextLibrarianId = @preFix + RIGHT(REPLICATE(0, @size) + CONVERT(VARCHAR(MAX), @num_nextLibrarianId) ,@size)
+
+		RETURN @nextLibrarianId
 	END
-END
 GO
 
-
-
------------------------------------------------------------
------------Trigger-----------------------------------------
------------------------------------------------------------
-
-CREATE OR ALTER TRIGGER [TG_AUTO_INSERT_BOOK_ITEM] ON [dbo].[BookInfo] AFTER INSERT, UPDATE
-AS BEGIN
-	DECLARE 
-		@NO_OF_INSERT_RECORD INT, 
-		@LAST_INSERTED_ID BIGINT, 
-		@j INT = 0
-
-	SELECT @NO_OF_INSERT_RECORD = COUNT(*) FROM [Inserted]
-	SELECT @LAST_INSERTED_ID = MAX(BookInfoId) FROM [dbo].[BookInfo]
-
-	WHILE @j < @NO_OF_INSERT_RECORD
+CREATE FUNCTION Func_NextMemberId(@lastMemberId VARCHAR(10), @preFix VARCHAR(3), @size INT)
+	RETURNS VARCHAR(10)
+AS
 	BEGIN
-		DECLARE @THIS_BOOK_INFO_ID BIGINT
-		SET @THIS_BOOK_INFO_ID = @LAST_INSERTED_ID - @NO_OF_INSERT_RECORD + @j + 1
-		EXEC [dbo].[USP_InsertBookItem] @BOOK_INFO_ID = @THIS_BOOK_INFO_ID
-		SET @j = @j + 1
+		IF (@lastMemberId = '')
+			SET @lastMemberId = @preFix + REPLICATE(0, @size - LEN(@preFix))
+
+		DECLARE @num_nextMemberId INT ,@nextMemberId VARCHAR(10)
+
+		SET @lastMemberId = LTRIM(RTRIM(@lastMemberId))
+		SET @num_nextMemberId = REPLACE(@lastMemberId, @preFix,'') + 1
+		SET @size = @size - LEN(@preFix)
+		SET @nextMemberId = @preFix + REPLICATE(0, @size - LEN(@preFix))
+		SET @nextMemberId = @preFix + RIGHT(REPLICATE(0, @size) + CONVERT(VARCHAR(MAX), @num_nextMemberId) ,@size)
+
+		RETURN @nextMemberId
 	END
-END
 GO
 
------------------------------------------------------------
------------Insert sample data------------------------------
------------------------------------------------------------
+CREATE FUNCTION Func_NextBookId(@lastBookId VARCHAR(10), @preFix VARCHAR(3), @size INT)
+	RETURNS VARCHAR(10)
+AS
+	BEGIN
+		IF (@lastBookId = '')
+			SET @lastBookId = @preFix + REPLICATE(0, @size - LEN(@preFix))
 
+		DECLARE @num_nextBookId INT ,@nextBookId VARCHAR(10)
 
------------------------------
--- Admin account ------------
--- username: admin ----------
--- password: 12 -------------
------------------------------
-INSERT INTO [dbo].[User] ( [FirstName], [LastName], [Gender], [DateOfBirth], [Ssn], [Address], [PhoneNumber], [Email], [Username], [Password], [UserType], [UserStatus])
-VALUES 
-	(N'Khánh',  N'Lâm', 'F', '20000520', '123456789', N'', '0000000000', NULL, 'admin', '7e7175c2e20d590551e9fb500bc38c8c', 'ADMIN', 1)					-- UID = 1
+		SET @lastBookId = LTRIM(RTRIM(@lastBookId))
+		SET @num_nextBookId = REPLACE(@lastBookId, @preFix,'') + 1
+		SET @size = @size - LEN(@preFix)
+		SET @nextBookId = @preFix + REPLICATE(0, @size - LEN(@preFix))
+		SET @nextBookId = @preFix + RIGHT(REPLICATE(0, @size) + CONVERT(VARCHAR(MAX), @num_nextBookId) ,@size)
+
+		RETURN @nextBookId
+	END
 GO
 
+CREATE TRIGGER Trig_InsertLibrarian ON [dbo].[Librarian] FOR INSERT
+AS 
+	BEGIN
+		DECLARE @LibrarianId VARCHAR(6)
+		SET @LibrarianId = (SELECT TOP (1) Id FROM dbo.Librarian ORDER BY Id DESC)
+		SELECT @LibrarianId = dbo.Func_NextLibrarianId(@LibrarianId, 'LIB', 6)
 
-----------------------------------------------------------
--- Librarian account -------------------------------------
--- username: librarian -----------------------------------
--- password: 12 ------------------------------------------
--- password (orther): 000000 -----------------------------
-----------------------------------------------------------
-INSERT INTO [dbo].[User] ( [FirstName], [LastName], [Gender], [DateOfBirth], [Ssn], [Address], [PhoneNumber], [Email], [Username], [Password], [UserType], [UserStatus])
-VALUES 
-	(N'Bích',  N'Nguyễn Ngọc', 'F', '20000331', '786522653964', N'Quận 7, Hồ Chí Minh', '0000000001', NULL, 'librarian', '7e7175c2e20d590551e9fb500bc38c8c', 'LIBRARIAN', 1),											-- UID = 2
-	(N'Giang',  N'Lê Trường', 'M', '19951203', '596522653964', N'26 Võ Văn Ngân, Quận Thủ Đức, Hồ Chí Minh', '0965632521', 'giangle1995@gmail.com', 'letruonggiang', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 0),	-- UID = 3
-	(N'Minh',  N'Mai Sỹ', 'O', '19940228', '496229526', N'30C Lê Văn Chí, Quận Thủ Đức, Hồ Chí Minh', '0339566263', 'msm1994@yahoo.com', 'msm1994', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 1),					-- UID = 4
-	(N'Thu',  N'Lê Thị', 'O', '19980214', '261626546455', N'8 Tân Lập, Quận 9, Hồ Chí Minh', '0368465655', 'thult@gmail.com', 'thult', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 1),									-- UID = 5
-	(N'Toàn',  N'Cao Văn', 'M', '19950831', '344643356', N'24 Hồ Văn Tư, Quận Thủ Đức, Hồ Chí Minh', '0945641535', 'toancv@outlook.com', 'toancv', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 0),						-- UID = 6
-	(N'Cúc',  N'Nguyễn Thị Thu', 'F', '19941002', '463786434', N'224 Lê Văn Việt, Quận 9, Hồ Chí Minh', '0914846315', 'cuntt@hotmail.com', 'cucntt', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 0),					-- UID = 7
-	(N'Việt',  N'Trần Quốc', 'M', '19970209', '243624766483', N'27 Thống Nhất, Dĩ An, Bình Dương', '0901316265', 'viettqq@yahoo.com', 'viettq', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 1),						-- UID = 8
-	(N'Sơn',  N'Huỳnh Văn', 'M', '19930402', '796289529', N'18A, đường DT 743B , Thuận An, Bình Dương', '0943325968', 'sonhv@gmail.com', 'sonhv', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 1),						-- UID = 9
-	(N'Mi',  N'Lê Thị Ngọc', 'F', '19951218', '232355657', N'14/2 Xô Viết Nghệ Tĩnh, Bình Thạnh, Hồ Chí Minh', '0968454664', 'miltn@gmail.com', 'miltn', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 1),				-- UID = 10
-	(N'Hương',  N'Võ Thu', 'F', '19920112', '786345586521', N'20 Hồ Tùng Mậu, Quận 1, HCM', '0927893532', 'huongvt@gmail.com', 'huongvo', 'e73adf9842e38aab89b6a8b9c8824051', 'LIBRARIAN', 1)								-- UID = 11
-GO
-INSERT INTO [dbo].[Librarian] ( [UserId], [StartDate], [Salary] )
-VALUES
-	(2, '20181025', 8000000),
-	(3, '20181102', 6500000),
-	(4, '20190103', 5500000),
-	(5, '20190605', 3500000),
-	(6, '20190924', 4500000),
-	(7, '20191031', 7500000),
-	(8, '20191104', 8500000),
-	(9, '20200301', 6800000),
-	(10, '20200414', 4200000),
-	(11, '20200512', 5400000)
+		UPDATE dbo.Librarian SET Id = @LibrarianId WHERE Id=''
+
+		INSERT INTO dbo.Account (PersonId, Username, Password, AccountType)
+		VALUES (@LibrarianId, @LibrarianId, 'e73adf9842e38aab89b6a8b9c8824051', 1)
+		--default password 000000
+	END
 GO
 
-----------------------------------------------------------
--- member account ----------------------------------------
--- username: member --------------------------------------
--- password: 12 ------------------------------------------
--- password (orther): 000000 -----------------------------
-----------------------------------------------------------
-INSERT INTO [dbo].[User] ( [FirstName], [LastName], [Gender], [DateOfBirth], [Ssn], [Address], [PhoneNumber], [Email], [Username], [Password], [UserStatus])
-VALUES 
-	(N'Ngọc',  N'Nguyễn Ngọc', 'F', '20000331', '563178953', N'Quận 7, Hồ Chí Minh', '0000000002', NULL, 'member', '7e7175c2e20d590551e9fb500bc38c8c', 1),														-- UID = 12
-	(N'Khải',  N'Lê Trường', 'M', '19951203', '522532456133', N'26 Võ Văn Ngân, Quận Thủ Đức, Hồ Chí Minh', '0965632000', 'khailt@gmail.com', '522532456133', 'e73adf9842e38aab89b6a8b9c8824051', 0),		-- UID = 13
-	(N'Hoàng',  N'Phan Văn', 'O', '19940228', '003259526', N'30C Lê Văn Chí, Quận Thủ Đức, Hồ Chí Minh', '0367566263', 'hangpv@yahoo.com', '003259526', 'e73adf9842e38aab89b6a8b9c8824051', 1),					-- UID = 14
-	(N'Nhi',  N'Võ Thị Yến', 'O', '19980214', '260022546455', N'8 Tân Lập, Quận 9, Hồ Chí Minh', '0396565655', 'nhivty@gmail.com', '260022546455', 'e73adf9842e38aab89b6a8b9c8824051', 1),									-- UID = 15
-	(N'Thắng',  N'Đinh Công', 'M', '19950831', '086343356', N'24 Hồ Văn Tư, Quận Thủ Đức, Hồ Chí Minh', '0900041535', 'thangdc@outlook.com', '086343356', 'e73adf9842e38aab89b6a8b9c8824051', 0),					-- UID = 16
-	(N'Hường',  N'Trần Bích', 'F', '19941002', '463786059', N'224 Lê Văn Việt, Quận 9, Hồ Chí Minh', '0914846012', 'huongtb@hotmail.com', '463786059', 'e73adf9842e38aab89b6a8b9c8824051', 0),					-- UID = 17
-	(N'Lâm',  N'Lê Sơn', 'M', '19970209', '243624023653', N'27 Thống Nhất, Dĩ An, Bình Dương', '0901316289', 'lamls@yahoo.com', '243624023653', 'e73adf9842e38aab89b6a8b9c8824051', 1),							-- UID = 18
-	(N'Đạt',  N'Hồ Văn', 'M', '19930402', '796200529', N'18A, đường DT 743B , Thuận An, Bình Dương', '0943325911', 'dathv@gmail.com', '796200529', 'e73adf9842e38aab89b6a8b9c8824051', 1),						-- UID = 19
-	(N'Cẩm',  N'Đinh Thị', 'F', '19951218', '230153689', N'14/2 Xô Viết Nghệ Tĩnh, Bình Thạnh, Hồ Chí Minh', '0963534664', 'camdt@gmail.com', '230153689', 'e73adf9842e38aab89b6a8b9c8824051', 1),				-- UID = 20
-	(N'Lụa',  N'Dương Thị', 'F', '19920112', '786860586521', N'20 Hồ Tùng Mậu, Quận 1, HCM', '0927003532', 'luadt@gmail.com', '786860586521', 'e73adf9842e38aab89b6a8b9c8824051', 1)								-- UID = 21
+CREATE TRIGGER Trig_InsertMember ON [dbo].[Member] FOR INSERT
+AS 
+	BEGIN
+		DECLARE @MemberId VARCHAR(10)
+		SET @MemberId = (SELECT TOP (1) Id FROM dbo.Member ORDER BY Id DESC)
+		SELECT @MemberId = dbo.Func_NextMemberId(@MemberId, 'MEM', 10)
+		UPDATE dbo.Member SET Id = @MemberId WHERE Id = ''
+
+		INSERT INTO dbo.Account (PersonId, Username, Password, AccountType)
+		VALUES (@MemberId, @MemberId, 'e73adf9842e38aab89b6a8b9c8824051', 2)
+		--default password 000000
+	END
 GO
-INSERT INTO [dbo].[Member] ([UserId], [RegisterDate], [ExpDate] )
-VALUES
-	(12, '20181025', '20210101'),
-	(13, '20181102', '20210101'),
-	(14, '20190103', '20210101'),
-	(15, '20190605', '20210101'),
-	(16, '20190924', '20210101'),
-	(17, '20191031', '20210101'),
-	(18, '20191104', '20210101'),
-	(19, '20200301', '20210101'),
-	(20, '20200414', '20210101'),
-	(21, '20200512', '20210101')
+
+CREATE TRIGGER Trig_InsertBook ON [dbo].[Book] FOR INSERT
+AS
+	BEGIN
+		DECLARE @BookId VARCHAR(10)
+		SET @BookId = (SELECT TOP (1) Id FROM dbo.Book ORDER BY Id DESC)
+		SELECT @BookId = dbo.Func_NextBookId(@BookId, 'B', 10)
+		UPDATE dbo.Book SET Id = @BookId WHERE Id = ''
+	END
+GO
+
+--Trigger 
+CREATE TRIGGER Trig_InsertBookItem ON [dbo].[BookItem] FOR INSERT
+AS
+	BEGIN
+		DECLARE @BookId VARCHAR(10)
+		SET @BookId = (SELECT TOP (1) BookId FROM dbo.BookItem ORDER BY BookId DESC)
+		UPDATE dbo.BookItem SET Count = Number WHERE BookId = @BookId
+	END
 GO
 
 
--- Chuyên mục sách 
-INSERT INTO [dbo].[BookCategory] ([BookCategoryName], [Limitdays], [BookCategoryStatus]) 
-VALUES 
-	(N'Truyện ngắn - tản văn', 20, 1),		--1
-	(N'Kỹ năng sống', 25, 1),				--2
-	(N'Tiểu thuyết', 30, 1),				--3
-	(N'Luyện thi ĐH-CĐ', 50, 1),			--4
-	(N'Khoa học - công nghệ', 30, 1),		--5
-	(N'Tiếng Anh', 30, 1),					--6
-	(N'Tiếng Pháp', 25, 0),					--7
-	(N'Tiếng Đức', 14, 0)					--8
+--Trigger cập nhật số lượng sách khi mượn
+CREATE TRIGGER Trig_InsertBorrow ON [dbo].[Borrow] AFTER INSERT
+AS
+	BEGIN
+		UPDATE dbo.BookItem SET Count = Count - 1 WHERE BookId = (SELECT Inserted.BookId FROM Inserted)
+	End
+GO
+
+--Trigger cập nhật số lượng sách khi trả
+CREATE TRIGGER Trig_InsertReturn ON [dbo].[ReturnBook] AFTER INSERT
+AS
+	BEGIN
+		DECLARE @BookId VARCHAR(10)
+		SET @BookId = (SELECT BookId FROM dbo.Borrow WHERE Id = (SELECT TOP (1) Inserted.BorrowId FROM Inserted))
+		UPDATE dbo.BookItem SET Count = Count + 1 WHERE BookId = @BookId
+		UPDATE dbo.Borrow SET Status = 0 WHERE Id = (SELECT TOP (1) Inserted.BorrowId FROM Inserted)
+	End
 GO
 
 
--- Nhà xuất bản
-INSERT INTO [dbo].[Publisher] ([PublisherName], [PhoneNumber], [Address], [Email], [Website]) 
-VALUES 
-	(N'Phụ Nữ Việt Nam', '02439710717', N'39 Hàng Chuối, Hà Nội', 'truyenthongvaprnxbpn@gmail.com', 'http://nxbphunu.com.vn/'),
-	(N'Trẻ', '02839316289', N'161B Lý Chính Thắng, Phường 7, Quận 3, Hồ Chí Minh', 'info@ybook.vn', 'https://www.nxbtre.com.vn/'),
-	(N'Văn học', '02437161518', N'18 Nguyễn Trường Tộ - Ba Đình - Hà Nội', 'info@nxbvanhoc.com.vn', 'https://nxbvanhoc.com.vn/'),
-	(N'Đại Học Quốc Gia Hà Nội', '02439714896', N'16 Hàng Chuối, Phạm Đình Hổ, Hai Bà Trưng, Hà Nội', 'nhaxuatbandhqghanoi@gmail.com', 'https://press.vnu.edu.vn/'),
-	(N'Đà Nẵng', '02363812964', N'108 Bạch Đằng, Hải Châu 1, Hải Châu, Đà Nẵng', 'xuatban@nxbdanang.vn', 'https://nxbdanang.vn/'),
-	(N'Thế Giới', '02838220102', N'7 Nguyễn Thị Minh Khai, Bến Nghé, Quận 1, Hồ Chí Minh', 'thegioi@hn.vnn.vn', 'http://www.thegioipublishers.vn/'),
-	(N'Tổng Hợp TPHCM', '02838256804', N'62 Nguyễn Thị Minh Khai, Đa Kao, Quận 1, Hồ Chí Minh', 'tonghop@nxbhcm.com.vn', 'https://www.nxbhcm.com.vn/'),
-	(N'Thanh Niên', '0462631724', N'64 Bà Triệu, Hoàn Kiếm, Hà Nội', 'chinhanhnxbthanhnien@gmail.com', 'https://www.nhaxuatbanthanhnien.vn/')
+--Create admin account
+--	username: admin
+--	password: admin
+INSERT INTO dbo.Account (PersonId, Username, Password, AccountType )
+VALUES ('LIB000', 'admin', 'db69fc039dcbd2962cb4d28f5891aae1', 0)
+
+--inser librarian data
+INSERT INTO dbo.Librarian (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, StartDate, Salary)
+VALUES ('', N'Hoàng', N'Đỗ Văn', '1992-2-10', N'Nam', '436505215753', N'12 Hoàng Diệu, Q.Thủ Đức', '0967892531', 'vanhoang210@gmail.com', '2018-11-26', 8000000)
+INSERT INTO dbo.Librarian (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, StartDate, Salary)
+VALUES ('', N'Linh', N'Nguyễn Thùy', '1995-12-25', N'Nữ', '0353255202', N'26/2 Đình Phong Phú, Q9', '09898368458', 'jen.nguyen256@gmail.con', '2019-4-24', 7500000)
+INSERT INTO dbo.Librarian (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, StartDate, Salary, Status)
+VALUES ('', N'Nhi', N'Dương Yến', '1997-7-27', N'Nữ', '35552246253', N'86/23 Đỗ Xuân Hợp, Q9', '09658793158', 'yenduong1997@outlook.com', '2019-8-12', 6500000, 0)
+INSERT INTO dbo.Librarian (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, StartDate, Salary)
+VALUES ('', N'Loan', N'Trần Thị Kim', '1999-6-30', N'Nữ', '000225365', N'20 Phan Duy Trinh, Q2', '0987894253', 'kimloannguyen@yahoo.com', '2019-12-31', 7250000)
+INSERT INTO dbo.Librarian (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, StartDate, Salary, Status)
+VALUES ('', N'Lực', N'Huỳnh Tấn', '1990-5-31', N'Khác', '563251540000', N'120/28 Phan Đăng Lưu, Q.Bình Thạnh', '0967663435', 'lucht@gmail.com', '2020-1-2', 6750000, 0)
+INSERT INTO dbo.Librarian (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, StartDate, Salary)
+VALUES ('', N'Minh', N'Lê Hoàng', '1997-7-2', N'Nam', '525256352', N'182 Võ Văn Ngân, Q.Thủ Đức', '0967892531', 'lehoangminh97@gmail.com', '2020-5-29', 6000000)
+
+
+--inser member data
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Lâm', N'Hoàng Minh', '1998-3-12', N'Nam', '123456789', N'', '0887895483', 'eriklam98@gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Hân', N'Phan Gia', '2002-5-2', N'Nữ', '282556689', N'', '0987853245', 'giahan0502@yahoo.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Như', N'Trần Bảo', '1999-7-8', N'Nữ', '822633521', N'', '0955215831', 'chimsedinang@gmail.com', GETDATE(), 0)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Yến', N'Vũ Hoàng', '1997-6-23', N'Nữ', '555542242456', N'', '0736565554', '@vuhoangyen1997gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Đức', N'Lê Tấn', '2000-12-31', N'Nam', '435215356245', N'', '0358956516', 'ducle.hoabinh@outlook.com', GETDATE(), 0)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Phúc', N'Võ Hoàng', '1996-2-8', N'Nam', '563256325335', N'', '0386626265', 'phucphotoshop@gmail.com', GETDATE(), 0)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Hưng', N'Lê Khắc', '2000-1-3', N'Nam', '354555445673', N'', '0376262656', 'lehung0103000@outlook.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Ngọc', N'Hồ Thị Minh', '2001-1-20', N'Nữ', '2665263653', N'', '0915656626', 'hothiminhngoc@gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Minh', N'Trương Hoàng', '2002-12-25', N'Nam', '732152149', N'', '0821232625', 'johnytruong@gmail.com', GETDATE(), 0)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Quyên', N'Huỳnh Thanh', '2000-5-17', N'Nữ', '998522325', N'', '0867482632', 'min.huynh@outlook.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Thùy', N'Trần Minh', '2001-8-14', N'Nữ', '562235111586', N'', '0965965645', 'tranminhthuy2k1@gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Anh', N'Nguyễn Tuấn', '2002-6-21', N'Nam', '532145689', N'', '0722321645', 'tuananhnguye2020@gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Hồng', N'Đinh Ánh', '1995-3-26', N'Nữ', '531525325', N'', '0979565666', 'jeciccasdinh@gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Ánh', N'Kiều Hồng', '1993-2-15', N'Nữ', '563214565', N'', '0387865555', 'kieuanhhong93@gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Anh', N'Nguyễn Kiều', '1997-2-1', N'Nữ', '563253586', N'', '0967565121', 'herakieuanh@gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Thảo', N'Trần Thu', '2000-7-18', N'Nữ', '782165663', N'', '0357484451', 'thaott@yahoo.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)
+VALUES ('', N'Thành', N'Lâm Minh', '1998-7-6', N'Nam', '456879132', N'', '0887323661', 'thanhlam72@gmail.com', GETDATE(), 1)
+INSERT INTO dbo.Member (Id, FirstName, LastName, Birthday, Sex, SSN, Address, PhoneNumber, Email, RegisterDate, Status)	
+VALUES ('', N'Vy', N'Hồ Thị Tường', '1999-3-2', N'Nữ', '789456115632', N'', '0917456556', 'tuongvycanhmong@yahoo.com', GETDATE(), 1)
+
+INSERT INTO dbo.Publisher (Name, PhoneNumber, Address, Email, Website) VALUES (N'Phụ Nữ Việt Nam', '02439710717', N'39 Hàng Chuối, Hà Nội', 'truyenthongvaprnxbpn@gmail.com', 'http://nxbphunu.com.vn/')
+INSERT INTO dbo.Publisher (Name, PhoneNumber, Address, Email, Website) VALUES (N'Trẻ', '02839316289', N'161B Lý Chính Thắng, Phường 7, Quận 3, Hồ Chí Minh', 'info@ybook.vn', 'https://www.nxbtre.com.vn/')
+INSERT INTO dbo.Publisher (Name, PhoneNumber, Address, Email, Website) VALUES (N'Văn học', '02437161518', N'18 Nguyễn Trường Tộ - Ba Đình - Hà Nội', 'info@nxbvanhoc.com.vn', 'https://nxbvanhoc.com.vn/')
+INSERT INTO dbo.Publisher (Name, PhoneNumber, Address, Email, Website) VALUES (N'Đại Học Quốc Gia Hà Nội', '02439714896', N'16 Hàng Chuối, Phạm Đình Hổ, Hai Bà Trưng, Hà Nội', 'nhaxuatbandhqghanoi@gmail.com', 'https://press.vnu.edu.vn/')
+INSERT INTO dbo.Publisher (Name, PhoneNumber, Address, Email, Website) VALUES (N'Đà Nẵng', '02363812964', N'108 Bạch Đằng, Hải Châu 1, Hải Châu, Đà Nẵng', 'xuatban@nxbdanang.vn', 'https://nxbdanang.vn/')
+INSERT INTO dbo.Publisher (Name, PhoneNumber, Address, Email, Website) VALUES (N'Thế Giới', '02838220102', N'7 Nguyễn Thị Minh Khai, Bến Nghé, Quận 1, Hồ Chí Minh', 'thegioi@hn.vnn.vn', 'http://www.thegioipublishers.vn/')
+INSERT INTO dbo.Publisher (Name, PhoneNumber, Address, Email, Website) VALUES (N'Tổng Hợp TPHCM', '02838256804', N'62 Nguyễn Thị Minh Khai, Đa Kao, Quận 1, Hồ Chí Minh', 'tonghop@nxbhcm.com.vn', 'https://www.nxbhcm.com.vn/')
+INSERT INTO dbo.Publisher (Name, PhoneNumber, Address, Email, Website) VALUES (N'Thanh Niên', '0462631724', N'64 Bà Triệu, Hoàn Kiếm, Hà Nội', 'chinhanhnxbthanhnien@gmail.com', 'https://www.nhaxuatbanthanhnien.vn/')
+
+
+INSERT INTO dbo.Author (NickName) VALUES (N'Ở Đây Zui Nè')		--1
+INSERT INTO dbo.Author (NickName) VALUES (N'Tony Buổi Sáng')	--2
+INSERT INTO dbo.Author (NickName) VALUES (N'Paulo Coelho')		--3
+INSERT INTO dbo.Author (NickName) VALUES (N'Jorge Amado')		--4
+INSERT INTO dbo.Author (NickName) VALUES (N'Ngọc Giao')		--5
+INSERT INTO dbo.Author (NickName) VALUES (N'Lê Đình Thanh')		--6
+INSERT INTO dbo.Author (NickName) VALUES (N'Nguyễn Việt Anh')		--7
+INSERT INTO dbo.Author (NickName) VALUES (N'Võ Quốc Bá Cẩn')		--8
+INSERT INTO dbo.Author (NickName) VALUES (N'Trần Quốc Anh')		--9
+INSERT INTO dbo.Author (NickName) VALUES (N'Trần Phương')		--10
+INSERT INTO dbo.Author (NickName) VALUES (N'Mai Lan Hương')		--11
+INSERT INTO dbo.Author (NickName) VALUES (N'Hà Thanh Uyên')		--12
+INSERT INTO dbo.Author (NickName) VALUES (N'Mai Thị Tường Vân')		--13
+INSERT INTO dbo.Author (NickName) VALUES (N'Kiên Trần')		--14
+INSERT INTO dbo.Author (NickName) VALUES (N'Nguyễn Thanh Loan')		--15
+INSERT INTO dbo.Author (NickName) VALUES (N'Stacey Riches')		--16
+INSERT INTO dbo.Author (NickName) VALUES (N'Claire Luong')		--17
+INSERT INTO dbo.Author (NickName) VALUES (N'Trí')		--18
+INSERT INTO dbo.Author (NickName) VALUES (N'Trác Nhã')		--19
+INSERT INTO dbo.Author (NickName) VALUES (N'Dale Carnegie')		--20
+
+INSERT INTO dbo.BookCategory (Name, LimitDays) VALUES (N'Truyện ngắn - tản văn', 20) --1
+INSERT INTO dbo.BookCategory (Name, LimitDays) VALUES (N'Kỹ năng sống', 25)		   --2
+INSERT INTO dbo.BookCategory (Name, LimitDays) VALUES (N'Tiểu thuyết', 30)		   --3
+INSERT INTO dbo.BookCategory (Name, LimitDays) VALUES (N'Luyện thi ĐH-CĐ', 50)		   --4
+INSERT INTO dbo.BookCategory (Name, LimitDays) VALUES (N'Khoa học - công nghệ', 30)		   --5
+INSERT INTO dbo.BookCategory (Name, LimitDays) VALUES (N'Tiếng Anh', 30)		   --6
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Vui Vẻ Không Quạu Nha', 1, 2020, 1, 280, '10 x 12', 53820)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000001', 20)
+INSERT INTO dbo.BookAuthor ( BookId, AuthorId) VALUES ('B000000001', 1)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Cà Phê Cùng Tony', 2, 2017, 1, 268, '13 x 20', 63000)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000002', 20)
+INSERT INTO dbo.BookAuthor ( BookId, AuthorId) VALUES ('B000000002', 2)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Trên Đường Băng', 2, 2017, 2, 308, '13 x 20', 64000)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000003', 15)
+INSERT INTO dbo.BookAuthor ( BookId, AuthorId) VALUES ('B000000003', 2)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Nhà Giả Kim', 3, 2017, 3, 224, '13 x 20.5', 55200)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000004', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000004', 3)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Hảo Hán Nơi Trảng Cát', 3, 2017, 3, 380, '14.5 x 20.5', 75000)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000005', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000005', 4)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Quán Gió', 3, 2017, 3, 180, '14 x 20.5', 52800)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000006', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000006', 5)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'GT Phát Triển Ứng Dụng Web', 4, 2019, 5, 340, '16 x 24', 168000)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000007', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000007', 6)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000007', 7)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Sử Dụng AM - GM Để Chứng Minh Bất Đẳng Thức', 4, 2019, 4, 256, '16 x 24', 60000)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000008', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000008', 8)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000008', 9)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'VẺ ĐẸP BẤT ĐẲNG THỨC TRONG CÁC KÌ THI OLYMPIC TOÁN HỌC', 4, 2016, 4, 492, '16 x 24', 95000)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000009', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000009', 8)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000009', 9)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000009', 10)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Giải Thích Ngữ Pháp Tiếng Anh (Bài Tập & Đáp Án)', 5, 2019, 6, 200, '16 x 24', 112500)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000010', 15)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000010', 11)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000010', 12)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Giải Mã Trí Nhớ', 5, 2019, 5, 102, '14.5 x 21', 98500)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000011', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000011', 13)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Cẩm Nang Tự Học Ielts', 6, 2019, 6, 188, '16 x 24', 65000)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000012', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000012', 14)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Ngữ Pháp Tiếng Anh', 5, 2019, 6, 280, '13.5 x 20', 60000)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000013', 15)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000013', 11)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000013', 15)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Little Stories – To Push You Forward', 5, 2018, 6, 192, '11.3 x 17.6', 50050)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000014', 5)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000014', 16)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Little Stories - To Make You A Good Person', 5, 2018, 6, 192, '11.3 x 17.6', 50050)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000015', 5)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000015', 16)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Little Stories - The Best Book For Your Leisure Time', 5, 2018, 6, 192, '11.3 x 17.6', 50050)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000016', 5)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000016', 17)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Little Stories - To Get More Knowledge', 5, 2018, 6, 192, '11.3 x 17.6', 50050)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000017', 5)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000017', 17)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Little Stories - To Have A Nice Day', 5, 2018, 6, 192, '11.3 x 17.6', 50050)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000018', 5)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000018', 16)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Little Stories - To Share With Your Friends', 5, 2018, 6, 192, '11.3 x 17.6', 50050)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000019', 5)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000019', 16)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Little Stories - The Book For Peaceful Nights', 5, 2018, 6, 192, '11.3 x 17.6', 50050)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000020', 5)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000020', 17)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Tự Thương Mình Sau Những Tháng Năm Thương Người', 3, 2019, 1, 248, '13 x 20.5', 58500)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000021', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000021', 18)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Mình Buồn Đủ Rồi, Mình Hạnh Phúc Thôi!', 3, 2020, 1, 224, '13 x 20.5', 71200)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000022', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000022', 18)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Khéo Ăn Nói Sẽ Có Được Thiên Hạ', 3, 2018, 2, 406, '14.5 x 20.5', 82500)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000023', 10)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000023', 19)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Đắc Nhân Tâm', 7, 2018, 2, 320, '14.5 x 20.5', 73500)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000024', 15)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000024', 20)
+
+INSERT INTO dbo.Book (Id, Title, PublisherId, YearPublish, BookCategoryId, PageNumber, Size, Price)
+VALUES ('', N'Đá Cuội Hay Kim Cương - Cùng Dale Carnegie Tiến Tới Thành Công', 8, 2018, 2, 248, '14.5 x 20.5', 73500)
+INSERT INTO dbo.BookItem (BookId, Number) VALUES ('B000000025', 15)
+INSERT INTO dbo.BookAuthor (BookId, AuthorId) VALUES ('B000000025', 20)
 GO
 
 
--- Tác giả
-INSERT INTO [dbo].[Author] ([NickName]) 
-VALUES 
-	(N'Ở Đây Zui Nè'),			--1
-	(N'Tony Buổi Sáng'),		--2
-	(N'Paulo Coelho'),			--3
-	(N'Jorge Amado'),			--4
-	(N'Ngọc Giao'),				--5
-	(N'Lê Đình Thanh'),			--6
-	(N'Nguyễn Việt Anh'),		--7
-	(N'Võ Quốc Bá Cẩn'),		--8
-	(N'Trần Quốc Anh'),			--9
-	(N'Trần Phương'),			--10
-	(N'Mai Lan Hương'),			--11
-	(N'Hà Thanh Uyên'),			--12
-	(N'Mai Thị Tường Vân'),		--13
-	(N'Kiên Trần'),				--14
-	(N'Nguyễn Thanh Loan'),		--15
-	(N'Stacey Riches'),			--16
-	(N'Claire Luong'),			--17
-	(N'Trí'),					--18
-	(N'Trác Nhã'),				--19
-	(N'Dale Carnegie')			--20
-GO
 
+INSERT INTO dbo.Borrow (BookId, MemberId, LibrarianId, BorrowDate)
+VALUES ('B000000021', 'MEM0000011', 'LIB001', '2019-12-20')
+INSERT INTO dbo.Borrow (BookId, MemberId, LibrarianId, BorrowDate)
+VALUES ('B000000022', 'MEM0000011', 'LIB001', '2019-12-20')
+INSERT INTO dbo.Borrow (BookId, MemberId, LibrarianId, BorrowDate)
+VALUES ('B000000023', 'MEM0000011', 'LIB001', '2019-12-20')
+INSERT INTO dbo.Borrow (BookId, MemberId, LibrarianId, BorrowDate)
+VALUES ('B000000015', 'MEM0000011', 'LIB000', '2019-12-20')
+INSERT INTO dbo.Borrow (BookId, MemberId, LibrarianId, BorrowDate)
+VALUES ('B000000011', 'MEM0000011', 'LIB001', '2020-1-20')
 
--- Đầu sách
-INSERT INTO [dbo].[BookInfo] ([Title], [PublisherId], [YearPublished], [BookCategoryId], [PageNumber], [Size], [Price], [Count])
-VALUES 
-	(N'Vui Vẻ Không Quạu Nha', 1, 2020, 1, 280, '10 x 12', 53820, 20),												--1
-	(N'Cà Phê Cùng Tony', 2, 2017, 1, 268, '13 x 20', 63000, 20),													--2
-	(N'Trên Đường Băng', 2, 2017, 2, 308, '13 x 20', 64000, 15),													--3
-	(N'Nhà Giả Kim', 3, 2017, 3, 224, '13 x 20.5', 55200, 10),														--4
-	(N'Hảo Hán Nơi Trảng Cát', 3, 2017, 3, 380, '14.5 x 20.5', 75000, 10), 											--5
-	(N'Quán Gió', 3, 2017, 3, 180, '14 x 20.5', 52800, 10),															--6
-	(N'GT Phát Triển Ứng Dụng Web', 4, 2019, 5, 340, '16 x 24', 168000, 10),										--7
-	(N'Sử Dụng AM - GM Để Chứng Minh Bất Đẳng Thức', 4, 2019, 4, 256, '16 x 24', 60000, 10),						--8
-	(N'VẺ ĐẸP BẤT ĐẲNG THỨC TRONG CÁC KÌ THI OLYMPIC TOÁN HỌC', 4, 2016, 4, 492, '16 x 24', 95000, 10),				--9
-	(N'Giải Thích Ngữ Pháp Tiếng Anh (Bài Tập & Đáp Án)', 5, 2019, 6, 200, '16 x 24', 112500, 15),					--10
-	(N'Giải Mã Trí Nhớ)', 5, 2019, 5, 102, '14.5 x 21', 98500, 10),													--11
-	(N'Cẩm Nang Tự Học Ielts)', 6, 2019, 6, 188, '16 x 24', 65000, 10),												--12
-	(N'Ngữ Pháp Tiếng Anh', 5, 2019, 6, 280, '13.5 x 20', 60000, 15),												--13
-	(N'Little Stories – To Push You Forward', 5, 2018, 6, 192, '11.3 x 17.6', 50050, 5),							--14
-	(N'Little Stories - To Make You A Good Person', 5, 2018, 6, 192, '11.3 x 17.6', 50050, 5),						--15
-	(N'Little Stories - The Best Book For Your Leisure Time', 5, 2018, 6, 192, '11.3 x 17.6', 50050, 5),			--16
-	(N'Little Stories - To Get More Knowledge', 5, 2018, 6, 192, '11.3 x 17.6', 50050, 5),							--17
-	(N'Little Stories - To Have A Nice Day', 5, 2018, 6, 192, '11.3 x 17.6', 50050, 5),								--18
-	(N'Little Stories - To Share With Your Friends', 5, 2018, 6, 192, '11.3 x 17.6', 50050, 5),						--19
-	(N'Little Stories - The Book For Peaceful Nights', 5, 2018, 6, 192, '11.3 x 17.6', 50050, 5),					--20
-	(N'Tự Thương Mình Sau Những Tháng Năm Thương Người', 3, 2019, 1, 248, '13 x 20.5', 58500, 10),					--21
-	(N'Mình Buồn Đủ Rồi, Mình Hạnh Phúc Thôi!', 3, 2020, 1, 224, '13 x 20.5', 71200, 10),							--22
-	(N'Khéo Ăn Nói Sẽ Có Được Thiên Hạ', 3, 2018, 2, 406, '14.5 x 20.5', 82500, 10),								--23
-	(N'Đắc Nhân Tâm', 7, 2018, 2, 320, '14.5 x 20.5', 73500, 15),													--24
-	(N'Đá Cuội Hay Kim Cương - Cùng Dale Carnegie Tiến Tới Thành Công', 8, 2018, 2, 248, '14.5 x 20.5', 73500, 15)	--25
-GO
-
-
--- Quan hệ tác giả - sách
-INSERT INTO [dbo].[BookAuthor] ([BookInfoId], [AuthorId]) 
-VALUES 
-	(1, 1),
-	(2, 2),
-	(3, 2),
-	(4, 3),
-	(5, 4),
-	(6, 5),
-	(7, 6), (7, 7),
-	(8, 8), (8, 9),
-	(9, 8), (9, 9), (9, 10),
-	(10, 11), (10, 12),
-	(11, 13),
-	(12, 14),
-	(13, 11), (13, 15),
-	(14, 16),
-	(15, 16),
-	(16, 17),
-	(17, 17),
-	(18, 16),
-	(19, 16),
-	(20, 17),
-	(21, 18),
-	(22, 18),
-	(23, 19),
-	(24, 20),
-	(25, 20)
+INSERT INTO dbo.Borrow (BookId, MemberId, LibrarianId, BorrowDate)
+VALUES ('B000000001', 'MEM0000012', 'LIB001', '2019-12-20')
 GO
